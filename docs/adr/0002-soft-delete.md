@@ -4,7 +4,7 @@ All entities use soft delete via a `deleted_at` timestamp column. When `deleted_
 
 **Why soft delete:**
 - A reporting system must preserve historical data. Deleting a client would orphan their purchase orders and deliveries in reports.
-- Soft delete allows hiding inactive records from UI while keeping them in aggregates.
+- Soft delete allows hiding inactive records from UI. Reports and dashboard stats exclude soft-deleted records for clean, current-state data.
 
 **Hard delete (admin-only):**
 - Hard delete permanently removes a row from the database.
