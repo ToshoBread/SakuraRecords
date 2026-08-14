@@ -19,8 +19,7 @@ Single currency: **Philippine peso (₱)**. No currency column — all monetary 
 ## Gotchas
 
 - **`payment_terms` is per-delivery, not per-PO.** Most schemas put payment terms on the order. Ours is on delivery because terms can vary per shipment.
-- **`shipped_quantity ≤ ordered_quantity` is not enforced by the DB.** The schema documents the rule, but it's app logic only. Any code creating deliveries must check this.
-- **`po_product` was originally named `po_product_pivot`.** Old references or tooling may use the old name.
+- **The user is non-tech-savvy.** Every UI decision should optimize for simplicity. Large touch targets, minimal navigation, clear labels. When in doubt, choose the simpler option.
 
 ## Status
 

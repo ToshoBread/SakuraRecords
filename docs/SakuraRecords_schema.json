@@ -1,0 +1,979 @@
+{
+  "tables": [
+    {
+      "id": "MGSDvHbycuQEyViA-KQx9",
+      "name": "client",
+      "x": -100.94638117675811,
+      "y": -134.4339814453127,
+      "locked": false,
+      "fields": [
+        {
+          "id": "epzLnhlmn-O95xCWdpjRV",
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "UjkQLF-670sVDkJUgh90O",
+          "name": "name",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": 255
+        },
+        {
+          "id": "ts_client_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_client_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_client_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "7ftgQ56aC5t5GCtLmJaUU",
+      "name": "address",
+      "x": -419.28460501171907,
+      "y": 791.5130376619262,
+      "locked": false,
+      "fields": [
+        {
+          "id": "ZlIk75J2bWGVwN184QX2_",
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "addr_clientId",
+          "name": "clientId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "o0RuxVo6d5XuBb5UarONm",
+          "name": "name",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Label for the address",
+          "size": 255
+        },
+        {
+          "id": "addr_addr_freeform",
+          "name": "address",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": 255
+        },
+        {
+          "id": "ts_addr_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_addr_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_addr_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "OMmsE5sIakmH_frlcwewT",
+      "name": "product",
+      "x": -714.1812631001587,
+      "y": 675.210116677002,
+      "locked": false,
+      "fields": [
+        {
+          "id": "8wmpt_Ek6GlzO_12naSPp",
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "2L1A_D5YsHipVYwgomdBg",
+          "name": "name",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": 255
+        },
+        {
+          "id": "6QxJVHNlgwqu0MQDst9da",
+          "name": "code",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": true,
+          "notNull": true,
+          "increment": false,
+          "comment": "Editable reference code (e.g. A2B4-32GQ)",
+          "size": 255
+        },
+        {
+          "id": "prod_description",
+          "name": "description",
+          "type": "TEXT",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Optional product description"
+        },
+        {
+          "id": "ts_product_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_product_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_product_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "Ht6CItUi0eI5Q7NZsU3O2",
+      "name": "purchase_order",
+      "x": -701.62289124585,
+      "y": 219.15837127935788,
+      "locked": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": false,
+          "comment": "User-supplied PO reference number",
+          "id": "YjB_spUf1xcYaaQm5MUsJ",
+          "size": 255
+        },
+        {
+          "id": "E7mXjc9359bKS2_eBMDFx",
+          "name": "clientId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "po_notes",
+          "name": "notes",
+          "type": "TEXT",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Optional notes (e.g. rush order)"
+        },
+        {
+          "id": "ts_po_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_po_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_po_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "tT370bXLCJD6dliwn6zfC",
+      "name": "po_product",
+      "x": -1107.8718162279054,
+      "y": 430.2279800476073,
+      "locked": false,
+      "fields": [
+        {
+          "name": "poId",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "id": "kPjrQotbJaaFmCjUWtjFm",
+          "size": 255
+        },
+        {
+          "id": "hDLwEY8-vinulFhHhvrD1",
+          "name": "productId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "pivot_ordered_quantity",
+          "name": "ordered_quantity",
+          "type": "NUMERIC",
+          "default": "",
+          "check": ">= 0",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Source of truth for ordered quantity"
+        },
+        {
+          "id": "ts_pivot_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_pivot_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_pivot_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "s8HRAwiRCtCFAGrE5bQb0",
+      "name": "delivery",
+      "x": -29.279630908203103,
+      "y": 177.28847072753902,
+      "locked": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": true,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "id": "JVNBo9eFjFr4BNwTYK63m"
+        },
+        {
+          "name": "poId",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "id": "hKRL5Zep6uidGUBhap1xX",
+          "size": 255
+        },
+        {
+          "id": "del_productId",
+          "name": "productId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "del_shipped_quantity",
+          "name": "shipped_quantity",
+          "type": "NUMERIC",
+          "default": "",
+          "check": ">= 0",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Must not exceed ordered_quantity minus total already shipped for this PO + product"
+        },
+        {
+          "id": "1lmEeH2-uNNtYBSzM1WIE",
+          "name": "unit_price",
+          "type": "NUMERIC",
+          "default": "",
+          "check": ">= 0",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "sSFEhHpmS6fPtLVEzv8m4",
+          "name": "delivery_date",
+          "type": "DATE",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "zcIEyaFecLc9GryZKb9oY",
+          "name": "payment_terms",
+          "type": "INTEGER",
+          "default": "30",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Net days to pay, editable",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "del_paid",
+          "name": "paid",
+          "type": "BOOLEAN",
+          "default": "false",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "All-or-nothing payment toggle"
+        },
+        {
+          "id": "zfNSkSdDnPJSpQF4YaRtk",
+          "name": "addressId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "S-oxbgDyZHe9HBVp9dIJA",
+          "name": "transactionDocumentId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "sHO5B117sKPeceN4k6DHP",
+          "name": "deliveryRequirementId",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": "",
+          "values": []
+        },
+        {
+          "id": "ts_delivery_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_delivery_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_delivery_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "MO-qKub1TLO5daYFZrL_X",
+      "name": "transaction_document",
+      "x": 430.5801776456909,
+      "y": 407.2869900815431,
+      "locked": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "id": "1o-WBmbLSqI10uzXMI57U"
+        },
+        {
+          "id": "4TqDLcyVjljx93Xq1qXjH",
+          "name": "document",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": 255
+        },
+        {
+          "id": "ts_tdoc_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_tdoc_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_tdoc_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    },
+    {
+      "id": "KJssY_eZVP3mLq3VEC3UT",
+      "name": "delivery_requirement",
+      "x": 431.8276600184324,
+      "y": 786.0171033547974,
+      "locked": false,
+      "fields": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "default": "",
+          "check": "",
+          "primary": true,
+          "unique": false,
+          "unsigned": true,
+          "notNull": true,
+          "increment": true,
+          "comment": "",
+          "id": "nDkx8hLicUypo329OaS_a"
+        },
+        {
+          "id": "ZnKb1fBM20ZbYU6G23DDL",
+          "name": "requirement",
+          "type": "VARCHAR",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "",
+          "size": 255
+        },
+        {
+          "id": "ts_dreq_created_at",
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_dreq_updated_at",
+          "name": "updated_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": ""
+        },
+        {
+          "id": "ts_dreq_deleted_at",
+          "name": "deleted_at",
+          "type": "TIMESTAMP",
+          "default": "",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": false,
+          "increment": false,
+          "comment": "Soft delete"
+        }
+      ],
+      "comment": "",
+      "indices": [],
+      "uniqueConstraints": [],
+      "color": "#175e7a",
+      "collapsed": false
+    }
+  ],
+  "relationships": [
+    {
+      "startTableId": "MGSDvHbycuQEyViA-KQx9",
+      "startFieldId": "epzLnhlmn-O95xCWdpjRV",
+      "endTableId": "7ftgQ56aC5t5GCtLmJaUU",
+      "endFieldId": "addr_clientId",
+      "cardinality": "one_to_many",
+      "fields": [
+        {
+          "startFieldId": "epzLnhlmn-O95xCWdpjRV",
+          "endFieldId": "addr_clientId"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_address_clientId_client",
+      "id": "rel_addr_client"
+    },
+    {
+      "startTableId": "Ht6CItUi0eI5Q7NZsU3O2",
+      "startFieldId": "E7mXjc9359bKS2_eBMDFx",
+      "endTableId": "MGSDvHbycuQEyViA-KQx9",
+      "endFieldId": "epzLnhlmn-O95xCWdpjRV",
+      "cardinality": "many_to_one",
+      "fields": [
+        {
+          "startFieldId": "E7mXjc9359bKS2_eBMDFx",
+          "endFieldId": "epzLnhlmn-O95xCWdpjRV"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_purchase_order_clientId_client",
+      "id": "Py_-TaOaA9qfIdkGXJXaD"
+    },
+    {
+      "startTableId": "Ht6CItUi0eI5Q7NZsU3O2",
+      "startFieldId": "YjB_spUf1xcYaaQm5MUsJ",
+      "endTableId": "tT370bXLCJD6dliwn6zfC",
+      "endFieldId": "kPjrQotbJaaFmCjUWtjFm",
+      "cardinality": "one_to_many",
+      "fields": [
+        {
+          "startFieldId": "YjB_spUf1xcYaaQm5MUsJ",
+          "endFieldId": "kPjrQotbJaaFmCjUWtjFm"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_po_product_poId_purchase_order",
+      "id": "OANx67Jbu8w950pVIcdR2"
+    },
+    {
+      "startTableId": "OMmsE5sIakmH_frlcwewT",
+      "startFieldId": "8wmpt_Ek6GlzO_12naSPp",
+      "endTableId": "tT370bXLCJD6dliwn6zfC",
+      "endFieldId": "hDLwEY8-vinulFhHhvrD1",
+      "cardinality": "one_to_many",
+      "fields": [
+        {
+          "startFieldId": "8wmpt_Ek6GlzO_12naSPp",
+          "endFieldId": "hDLwEY8-vinulFhHhvrD1"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_po_product_productId_product",
+      "id": "FxmRrDw3IMIgGxDlAiZ3K"
+    },
+    {
+      "startTableId": "s8HRAwiRCtCFAGrE5bQb0",
+      "startFieldId": "hKRL5Zep6uidGUBhap1xX",
+      "endTableId": "Ht6CItUi0eI5Q7NZsU3O2",
+      "endFieldId": "YjB_spUf1xcYaaQm5MUsJ",
+      "cardinality": "many_to_one",
+      "fields": [
+        {
+          "startFieldId": "hKRL5Zep6uidGUBhap1xX",
+          "endFieldId": "YjB_spUf1xcYaaQm5MUsJ"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_delivery_poId_purchase_order",
+      "id": "9cGnZHj8T9qsfZHN3WpcI"
+    },
+    {
+      "startTableId": "s8HRAwiRCtCFAGrE5bQb0",
+      "startFieldId": "del_productId",
+      "endTableId": "OMmsE5sIakmH_frlcwewT",
+      "endFieldId": "8wmpt_Ek6GlzO_12naSPp",
+      "cardinality": "many_to_one",
+      "fields": [
+        {
+          "startFieldId": "del_productId",
+          "endFieldId": "8wmpt_Ek6GlzO_12naSPp"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_delivery_productId_product",
+      "id": "rel_del_product"
+    },
+    {
+      "startTableId": "7ftgQ56aC5t5GCtLmJaUU",
+      "startFieldId": "ZlIk75J2bWGVwN184QX2_",
+      "endTableId": "s8HRAwiRCtCFAGrE5bQb0",
+      "endFieldId": "zfNSkSdDnPJSpQF4YaRtk",
+      "cardinality": "one_to_many",
+      "fields": [
+        {
+          "startFieldId": "ZlIk75J2bWGVwN184QX2_",
+          "endFieldId": "zfNSkSdDnPJSpQF4YaRtk"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_delivery_addressId_address",
+      "id": "pVSdrRv6tnXgfvgVGxj50"
+    },
+    {
+      "startTableId": "s8HRAwiRCtCFAGrE5bQb0",
+      "startFieldId": "S-oxbgDyZHe9HBVp9dIJA",
+      "endTableId": "MO-qKub1TLO5daYFZrL_X",
+      "endFieldId": "1o-WBmbLSqI10uzXMI57U",
+      "cardinality": "many_to_one",
+      "fields": [
+        {
+          "startFieldId": "S-oxbgDyZHe9HBVp9dIJA",
+          "endFieldId": "1o-WBmbLSqI10uzXMI57U"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_delivery_transactionDocumentId_transaction_document",
+      "id": "DcKpqn1_TrzUy9KjtsZ9F"
+    },
+    {
+      "startTableId": "s8HRAwiRCtCFAGrE5bQb0",
+      "startFieldId": "sHO5B117sKPeceN4k6DHP",
+      "endTableId": "KJssY_eZVP3mLq3VEC3UT",
+      "endFieldId": "nDkx8hLicUypo329OaS_a",
+      "cardinality": "many_to_one",
+      "fields": [
+        {
+          "startFieldId": "sHO5B117sKPeceN4k6DHP",
+          "endFieldId": "nDkx8hLicUypo329OaS_a"
+        }
+      ],
+      "updateConstraint": "No action",
+      "deleteConstraint": "No action",
+      "name": "fk_delivery_deliveryRequirementId_delivery_requirement",
+      "id": "KpI_yNbrWNHDw6RvJMQx_"
+    }
+  ],
+  "notes": [],
+  "subjectAreas": [],
+  "database": "postgresql",
+  "types": [],
+  "enums": [],
+  "title": "SakuraRecords"
+}
