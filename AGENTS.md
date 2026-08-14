@@ -23,4 +23,4 @@ Single currency: **Philippine peso (₱)**. No currency column — all monetary 
 
 ## Status
 
-No source code yet. This repo contains design artifacts only.
+Vue 3 + Vite + TypeScript project initialized. Tailwind CSS, shadcn-vue, @supabase/supabase-js, and @vueuse/core installed. Ready for UI/UX implementation.
