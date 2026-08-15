@@ -15,7 +15,11 @@ function handleThemeChange(value: string) {
 
 function handleDensityChange(value: string) {
   setDensity(value as Density)
+  document.documentElement.classList.add('density-transition')
   document.documentElement.setAttribute('data-density', value)
+  setTimeout(() => {
+    document.documentElement.classList.remove('density-transition')
+  }, 300)
 }
 
 function handleLandingPageChange(value: string) {

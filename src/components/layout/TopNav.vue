@@ -5,7 +5,7 @@ import { useTheme } from '@/composables/useTheme'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import UserMenu from './UserMenu.vue'
-import { Menu, Search, Sun, Moon } from 'lucide-vue-next'
+import { Menu, Search, Sun, Moon, Monitor } from 'lucide-vue-next'
 
 defineProps<{
   sidebarToggle: boolean
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { isDark, toggleTheme } = useTheme()
+const { cycleTheme, themeIcon, themeLabel } = useTheme()
 const searchQuery = ref('')
 
 function handleSearch() {
@@ -54,9 +54,10 @@ function handleSearch() {
     </form>
 
     <div class="ml-auto flex items-center gap-1">
-      <Button variant="ghost" size="icon" @click="toggleTheme" :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'">
-        <Sun v-if="isDark" class="size-5" />
-        <Moon v-else class="size-5" />
+      <Button variant="ghost" size="icon" @click="cycleTheme" :title="themeLabel">
+        <Sun v-if="themeIcon === 'sun'" class="size-5" />
+        <Moon v-else-if="themeIcon === 'moon'" class="size-5" />
+        <Monitor v-else class="size-5" />
       </Button>
       <UserMenu />
     </div>

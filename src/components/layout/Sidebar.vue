@@ -50,7 +50,7 @@ function isActive(name: string) {
       open ? 'translate-x-0' : '-translate-x-full',
     ]"
   >
-    <div class="flex items-center justify-between p-4">
+    <div class="flex h-14 items-center justify-between px-4">
       <span class="text-lg font-semibold">SakuraRecords</span>
       <Button variant="ghost" size="icon" class="lg:hidden" @click="emit('close')">
         <X class="size-4" />
@@ -76,6 +76,13 @@ function isActive(name: string) {
         {{ item.label }}
       </RouterLink>
 
+      <Button as-child variant="outline" class="mt-2 w-full justify-start gap-2">
+        <RouterLink :to="{ name: 'purchase-order-create' }" @click="emit('close')">
+          <Plus class="size-4" />
+          New Purchase Order
+        </RouterLink>
+      </Button>
+
       <template v-if="isAdmin">
         <Separator class="my-2" />
         <RouterLink
@@ -95,14 +102,5 @@ function isActive(name: string) {
         </RouterLink>
       </template>
     </nav>
-
-    <div class="p-2">
-      <Button as-child variant="outline" class="w-full justify-start gap-2">
-        <RouterLink :to="{ name: 'purchase-order-create' }">
-          <Plus class="size-4" />
-          New Purchase Order
-        </RouterLink>
-      </Button>
-    </div>
   </aside>
 </template>

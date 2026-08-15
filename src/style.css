@@ -126,21 +126,22 @@
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease, stroke 0.3s ease !important;
 }
 
+.density-transition,
+.density-transition *,
+.density-transition *::before,
+.density-transition *::after {
+  transition: padding 0.3s ease, margin 0.3s ease, gap 0.3s ease !important;
+}
+
 /* Density settings */
 [data-density="compact"] {
-  --spacing-unit: 0.5rem;
-  --spacing-lg: 0.75rem;
-  --spacing-xl: 1rem;
+  --spacing: 0.2rem;
 }
 
 [data-density="regular"] {
-  --spacing-unit: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
+  --spacing: 0.25rem;
 }
 
 [data-density="comfy"] {
-  --spacing-unit: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  --spacing: 0.375rem;
 }
