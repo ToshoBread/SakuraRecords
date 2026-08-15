@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { formatCurrency } from '@/lib/format'
 
-export interface PO {
+export interface PurchaseOrder {
   id: string
-  clientId: number
+  clientid: number
   notes: string | null
   created_at: string
   client?: { name: string }
@@ -12,7 +13,7 @@ export interface PO {
 }
 
 export interface DashboardStats {
-  openPOs: number
+  openPurchaseOrders: number
   deliveriesThisMonth: number
   grossSalesThisMonth: number
   overduePayments: number
@@ -20,10 +21,10 @@ export interface DashboardStats {
   grossSalesThisQuarter: number
 }
 
-export function usePOs() {
-  const poList = ref<PO[]>([])
+export function usePurchaseOrders() {
+  const purchaseOrderList = ref<PurchaseOrder[]>([])
   const stats = ref<DashboardStats>({
-    openPOs: 0,
+    openPurchaseOrders: 0,
     deliveriesThisMonth: 0,
     grossSalesThisMonth: 0,
     overduePayments: 0,
@@ -38,8 +39,8 @@ export function usePOs() {
     const { data, error: fetchErr } = await supabase
       .from('purchase_order')
       .select(`
-        id, clientId, notes, created_at,
-        client:clientId (name),
+        id, clientid, notes, created_at,
+        client:clientid (name),
         deliveries:delivery (count),
         po_products:po_product (count)
       `)
@@ -50,7 +51,7 @@ export function usePOs() {
     if (fetchErr) {
       error.value = fetchErr.message
     } else {
-      poList.value = data as PO[]
+      purchaseOrderList.value = data as unknown as PurchaseOrder[]
     }
     loading.value = false
   }
@@ -61,8 +62,29 @@ export function usePOs() {
     const quarterStart = getQuarterStart(now).toISOString()
     const today = now.toISOString()
 
-    const { count: openPOs } = await supabase
-      .rpc('count_open_pos')
+    // Count open purchase orders
+    const { data: allPurchaseOrders } = await supabase
+      .from('purchase_order')
+      .select('id')
+      .is('deleted_at', null)
+
+    let openPurchaseOrders = 0
+    if (allPurchaseOrders) {
+      for (const po of allPurchaseOrders) {
+        const { data: pivots } = await supabase
+          .from('po_product')
+          .select('ordered_quantity, productid')
+          .eq('poid', po.id)
+          .is('deleted_at', null)
+
+        if (!pivots || pivots.length === 0) {
+          openPurchaseOrders++
+          continue
+        }
+
+        if (pivots.length > 0) openPurchaseOrders++
+      }
+    }
 
     const { count: deliveriesThisMonth } = await supabase
       .from('delivery')
@@ -74,7 +96,7 @@ export function usePOs() {
       .from('delivery')
       .select('shipped_quantity, unit_price')
       .is('deleted_at', null)
-      .gte('delivery_date', monthStart.slice(0, 10)) as { data: { shipped_quantity: number; unit_price: number }[] | null }
+      .gte('delivery_date', monthStart.slice(0, 10))
 
     const grossSalesThisMonth = monthSales?.reduce(
       (sum, d) => sum + Number(d.shipped_quantity) * Number(d.unit_price), 0
@@ -97,14 +119,14 @@ export function usePOs() {
       .from('delivery')
       .select('shipped_quantity, unit_price')
       .is('deleted_at', null)
-      .gte('delivery_date', quarterStart.slice(0, 10)) as { data: { shipped_quantity: number; unit_price: number }[] | null }
+      .gte('delivery_date', quarterStart.slice(0, 10))
 
     const grossSalesThisQuarter = quarterSales?.reduce(
       (sum, d) => sum + Number(d.shipped_quantity) * Number(d.unit_price), 0
     ) ?? 0
 
     stats.value = {
-      openPOs: openPOs ?? 0,
+      openPurchaseOrders: openPurchaseOrders ?? 0,
       deliveriesThisMonth: deliveriesThisMonth ?? 0,
       grossSalesThisMonth,
       overduePayments: overduePayments ?? 0,
@@ -113,32 +135,26 @@ export function usePOs() {
     }
   }
 
+  // Fiscal quarters: Q1=Dec-Feb, Q2=Mar-May, Q3=Jun-Aug, Q4=Sep-Nov
   function getQuarterStart(date: Date): Date {
     const month = date.getMonth()
-    if (month >= 3 && month < 6) return new Date(date.getFullYear(), 3, 1)
-    if (month >= 6 && month < 9) return new Date(date.getFullYear(), 6, 1)
-    if (month >= 9) return new Date(date.getFullYear(), 9, 1)
-    return new Date(date.getFullYear() - 1, 9, 1)
+    const year = date.getFullYear()
+    if (month >= 2 && month <= 4) return new Date(year, 2, 1)       // Q2: Mar-May
+    if (month >= 5 && month <= 7) return new Date(year, 5, 1)       // Q3: Jun-Aug
+    if (month >= 8 && month <= 10) return new Date(year, 8, 1)      // Q4: Sep-Nov
+    return new Date(year - 1, 11, 1)                                // Q1: Dec-Feb (starts Dec of prev year)
   }
 
-  function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-      minimumFractionDigits: 0,
-    }).format(amount)
-  }
-
-  async function createPO(poNumber: string, clientId: number, notes: string | null, products: { productId: number; ordered_quantity: number }[]) {
+  async function createPurchaseOrder(purchaseOrderNumber: string, clientId: number, notes: string | null, products: { productId: number; ordered_quantity: number }[]) {
     const { error: poError } = await supabase
       .from('purchase_order')
-      .insert({ id: poNumber, clientId, notes })
+      .insert({ id: purchaseOrderNumber, clientid: clientId, notes })
 
     if (poError) throw poError
 
     const pivotRows = products.map(p => ({
-      poId: poNumber,
-      productId: p.productId,
+      poid: purchaseOrderNumber,
+      productid: p.productId,
       ordered_quantity: p.ordered_quantity,
     }))
 
@@ -149,25 +165,25 @@ export function usePOs() {
     if (pivotError) throw pivotError
   }
 
-  async function checkPONumberUnique(poNumber: string): Promise<boolean> {
+  async function checkPurchaseOrderNumberUnique(purchaseOrderNumber: string): Promise<boolean> {
     const { count } = await supabase
       .from('purchase_order')
       .select('*', { count: 'exact', head: true })
-      .eq('id', poNumber)
+      .eq('id', purchaseOrderNumber)
       .is('deleted_at', null)
 
     return count === 0
   }
 
   return {
-    poList,
+    purchaseOrderList,
     stats,
     loading,
     error,
     fetchRecent,
     fetchStats,
     formatCurrency,
-    createPO,
-    checkPONumberUnique,
+    createPurchaseOrder,
+    checkPurchaseOrderNumberUnique,
   }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { usePO } from '@/composables/usePO'
+import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { useProducts } from '@/composables/useProducts'
 import { toast } from 'vue-sonner'
 import { supabase } from '@/lib/supabase'
@@ -17,13 +17,13 @@ import { Plus, Trash2 } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
-const poNumber = route.params.poNumber as string
+const poNumber = route.params.purchaseOrderNumber as string
 
-const { po, loading, error, productsWithRemaining, fetchByPONumber } = usePO()
+const { purchaseOrder, loading, error, productsWithRemaining, fetchByPurchaseOrderNumber } = usePurchaseOrder()
 const { products: allProducts, fetchAll: fetchAllProducts } = useProducts()
 
 const notes = ref('')
-const localProducts = ref<{ productId: number; name: string; code: string; ordered_quantity: number; hasDeliveries: boolean }[]>([])
+const localProducts = ref<{ productid: number; name: string; code: string; ordered_quantity: number; hasDeliveries: boolean }[]>([])
 const showProductSheet = ref(false)
 const productSearch = ref('')
 const submitting = ref(false)
@@ -38,11 +38,11 @@ const filteredProducts = computed(() => {
 })
 
 onMounted(async () => {
-  await Promise.all([fetchByPONumber(poNumber), fetchAllProducts()])
-  if (po.value) {
-    notes.value = po.value.notes || ''
+  await Promise.all([fetchByPurchaseOrderNumber(poNumber), fetchAllProducts()])
+  if (purchaseOrder.value) {
+    notes.value = purchaseOrder.value.notes || ''
     localProducts.value = productsWithRemaining.value.map(p => ({
-      productId: p.productId,
+      productid: p.productid,
       name: p.product.name,
       code: p.product.code,
       ordered_quantity: Number(p.ordered_quantity),
@@ -52,9 +52,9 @@ onMounted(async () => {
 })
 
 function addProduct(product: { id: number; name: string; code: string }) {
-  if (localProducts.value.some(p => p.productId === product.id)) return
+  if (localProducts.value.some(p => p.productid === product.id)) return
   localProducts.value.push({
-    productId: product.id,
+    productid: product.id,
     name: product.name,
     code: product.code,
     ordered_quantity: 1,
@@ -64,14 +64,14 @@ function addProduct(product: { id: number; name: string; code: string }) {
   productSearch.value = ''
 }
 
-function removeProduct(productId: number) {
-  const product = localProducts.value.find(p => p.productId === productId)
+function removeProduct(productid: number) {
+  const product = localProducts.value.find(p => p.productid === productid)
   if (product?.hasDeliveries) return
-  localProducts.value = localProducts.value.filter(p => p.productId !== productId)
+  localProducts.value = localProducts.value.filter(p => p.productid !== productid)
 }
 
-function updateQuantity(productId: number, qty: number) {
-  const item = localProducts.value.find(p => p.productId === productId)
+function updateQuantity(productid: number, qty: number) {
+  const item = localProducts.value.find(p => p.productid === productid)
   if (item) item.ordered_quantity = Math.max(1, qty)
 }
 
@@ -94,48 +94,48 @@ async function handleSubmit() {
 
     const { data: currentPivots } = await supabase
       .from('po_product')
-      .select('productId')
-      .eq('poId', poNumber)
+      .select('productid')
+      .eq('poid', poNumber)
 
-    const currentProductIds = currentPivots?.map(p => p.productId) ?? []
-    const newProductIds = localProducts.value.map(p => p.productId)
+    const currentProductIds = currentPivots?.map(p => p.productid) ?? []
+    const newProductIds = localProducts.value.map(p => p.productid)
 
-    const toAdd = localProducts.value.filter(p => !currentProductIds.includes(p.productId))
+    const toAdd = localProducts.value.filter(p => !currentProductIds.includes(p.productid))
     if (toAdd.length > 0) {
       const { error: addError } = await supabase
         .from('po_product')
         .insert(toAdd.map(p => ({
-          poId: poNumber,
-          productId: p.productId,
+          poid: poNumber,
+          productid: p.productid,
           ordered_quantity: p.ordered_quantity,
         })))
       if (addError) throw addError
     }
 
     const toRemove = currentProductIds.filter(id => !newProductIds.includes(id))
-    for (const productId of toRemove) {
-      const product = localProducts.value.find(p => p.productId === productId)
+    for (const productid of toRemove) {
+      const product = localProducts.value.find(p => p.productid === productid)
       if (product?.hasDeliveries) continue
       const { error: removeError } = await supabase
         .from('po_product')
         .delete()
-        .eq('poId', poNumber)
-        .eq('productId', productId)
+        .eq('poid', poNumber)
+        .eq('productid', productid)
       if (removeError) throw removeError
     }
 
     for (const product of localProducts.value) {
-      if (currentProductIds.includes(product.productId)) {
+      if (currentProductIds.includes(product.productid)) {
         const { error: qtyError } = await supabase
           .from('po_product')
           .update({ ordered_quantity: product.ordered_quantity })
-          .eq('poId', poNumber)
-          .eq('productId', product.productId)
+          .eq('poid', poNumber)
+          .eq('productid', product.productid)
         if (qtyError) throw qtyError
       }
     }
 
-    router.push({ name: 'po-detail', params: { poNumber } })
+    router.push({ name: 'purchase-order-detail',     params: { purchaseOrderNumber: poNumber } })
     toast.success('Purchase order updated')
   } catch (e: any) {
     toast.error(e.message)
@@ -156,7 +156,7 @@ async function handleSubmit() {
 
     <div v-else-if="error" class="text-destructive">{{ error }}</div>
 
-    <template v-else-if="po">
+    <template v-else-if="purchaseOrder">
       <Card>
         <CardHeader>
           <CardTitle>Edit Purchase Order</CardTitle>
@@ -165,12 +165,12 @@ async function handleSubmit() {
           <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
             <div class="flex flex-col gap-2 text-sm">
               <div class="flex justify-between">
-                <span class="text-muted-foreground">PO Number</span>
-                <span class="font-medium">{{ po.id }}</span>
+                <span class="text-muted-foreground">Purchase Order Number</span>
+                <span class="font-medium">{{ purchaseOrder.id }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-muted-foreground">Client</span>
-                <span class="font-medium">{{ po.client.name }}</span>
+                <span class="font-medium">{{ purchaseOrder.client.name }}</span>
               </div>
             </div>
 
@@ -215,14 +215,14 @@ async function handleSubmit() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow v-for="item in localProducts" :key="item.productId">
+                  <TableRow v-for="item in localProducts" :key="item.productid">
                     <TableCell>{{ item.name }}</TableCell>
                     <TableCell>{{ item.code }}</TableCell>
                     <TableCell>
                       <Input
                         type="number"
                         :model-value="item.ordered_quantity"
-                        @update:model-value="updateQuantity(item.productId, Number($event))"
+                        @update:model-value="updateQuantity(item.productid, Number($event))"
                         min="1"
                         class="h-9"
                         :disabled="submitting || item.hasDeliveries"
@@ -233,7 +233,7 @@ async function handleSubmit() {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        @click="removeProduct(item.productId)"
+                        @click="removeProduct(item.productid)"
                         :disabled="submitting || item.hasDeliveries"
                         :title="item.hasDeliveries ? 'Cannot remove: product has deliveries' : 'Remove product'"
                       >
@@ -265,7 +265,7 @@ async function handleSubmit() {
         <SheetContent side="right" class="w-[400px] sm:w-[540px]">
           <SheetHeader>
             <SheetTitle>Add Product</SheetTitle>
-            <SheetDescription>Select a product to add to this PO</SheetDescription>
+            <SheetDescription>Select a product to add to this purchase order</SheetDescription>
           </SheetHeader>
           <div class="mt-4 flex flex-col gap-4">
             <Input
@@ -278,7 +278,7 @@ async function handleSubmit() {
                 :key="product.id"
                 type="button"
                 class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground text-left"
-                :class="{ 'opacity-50 pointer-events-none': localProducts.some(p => p.productId === product.id) }"
+                :class="{ 'opacity-50 pointer-events-none': localProducts.some(p => p.productid === product.id) }"
                 @click="addProduct(product)"
               >
                 <span class="font-medium">{{ product.name }}</span>

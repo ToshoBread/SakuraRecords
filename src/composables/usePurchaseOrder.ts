@@ -1,35 +1,36 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { formatCurrency } from '@/lib/format'
 
-export interface PODetail {
+export interface PurchaseOrderDetail {
   id: string
-  clientId: number
+  clientid: number
   notes: string | null
   created_at: string
   client: { id: number; name: string }
-  po_products: POProduct[]
+  po_products: PurchaseOrderProduct[]
   deliveries: Delivery[]
 }
 
-export interface POProduct {
-  poId: string
-  productId: number
+export interface PurchaseOrderProduct {
+  poid: string
+  productid: number
   ordered_quantity: number
   product: { id: number; name: string; code: string }
 }
 
 export interface Delivery {
   id: number
-  poId: string
-  productId: number
+  poid: string
+  productid: number
   shipped_quantity: number
   unit_price: number
   delivery_date: string
   payment_terms: number
   paid: boolean
-  addressId: number
-  transactionDocumentId: number
-  deliveryRequirementId: number
+  addressid: number
+  transactiondocumentid: number
+  deliveryrequirementid: number
   product: { name: string; code: string }
   address: { name: string }
   transaction_document: { document: string }
@@ -37,24 +38,24 @@ export interface Delivery {
 }
 
 export interface ProductWithRemaining {
-  poId: string
-  productId: number
+  poid: string
+  productid: number
   ordered_quantity: number
   product: { id: number; name: string; code: string }
   shipped: number
   remaining: number
 }
 
-export function usePO() {
-  const po = ref<PODetail | null>(null)
+export function usePurchaseOrder() {
+  const purchaseOrder = ref<PurchaseOrderDetail | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
   const productsWithRemaining = computed<ProductWithRemaining[]>(() => {
-    if (!po.value) return []
-    return po.value.po_products.map(pp => {
-      const shipped = po.value!.deliveries
-        .filter(d => d.productId === pp.productId)
+    if (!purchaseOrder.value) return []
+    return purchaseOrder.value.po_products.map(pp => {
+      const shipped = purchaseOrder.value!.deliveries
+        .filter(d => d.productid === pp.productid)
         .reduce((sum, d) => sum + Number(d.shipped_quantity), 0)
       return {
         ...pp,
@@ -64,45 +65,45 @@ export function usePO() {
     })
   })
 
-  async function fetchByPONumber(poNumber: string) {
+  async function fetchByPurchaseOrderNumber(purchaseOrderNumber: string) {
     loading.value = true
     const { data, error: err } = await supabase
       .from('purchase_order')
       .select(`
         *,
-        client:clientId (id, name),
+        client:clientid (id, name),
         po_products:po_product (
-          poId, productId, ordered_quantity,
-          product:productId (id, name, code)
+          poid, productid, ordered_quantity,
+          product:productid (id, name, code)
         ),
         deliveries:delivery (
           *,
-          product:productId (name, code),
-          address:addressId (name),
-          transaction_document:transactionDocumentId (document),
-          delivery_requirement:deliveryRequirementId (requirement)
+          product:productid (name, code),
+          address:addressid (name),
+          transaction_document:transactiondocumentid (document),
+          delivery_requirement:deliveryrequirementid (requirement)
         )
       `)
-      .eq('id', poNumber)
+      .eq('id', purchaseOrderNumber)
       .is('deleted_at', null)
       .single()
 
     if (err) error.value = err.message
-    else po.value = data as unknown as PODetail
+    else purchaseOrder.value = data as unknown as PurchaseOrderDetail
     loading.value = false
   }
 
   async function addDelivery(delivery: {
-    poId: string
-    productId: number
+    poid: string
+    productid: number
     shipped_quantity: number
     unit_price: number
     delivery_date: string
     payment_terms: number
     paid: boolean
-    addressId: number
-    transactionDocumentId: number
-    deliveryRequirementId: number
+    addressid: number
+    transactiondocumentid: number
+    deliveryrequirementid: number
   }) {
     const { error: err } = await supabase
       .from('delivery')
@@ -112,15 +113,15 @@ export function usePO() {
   }
 
   async function updateDelivery(id: number, delivery: {
-    productId: number
+    productid: number
     shipped_quantity: number
     unit_price: number
     delivery_date: string
     payment_terms: number
     paid: boolean
-    addressId: number
-    transactionDocumentId: number
-    deliveryRequirementId: number
+    addressid: number
+    transactiondocumentid: number
+    deliveryrequirementid: number
   }) {
     const { error: err } = await supabase
       .from('delivery')
@@ -142,20 +143,12 @@ export function usePO() {
     if (err) throw err
   }
 
-  function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-      minimumFractionDigits: 0,
-    }).format(amount)
-  }
-
   return {
-    po,
+    purchaseOrder,
     loading,
     error,
     productsWithRemaining,
-    fetchByPONumber,
+    fetchByPurchaseOrderNumber,
     addDelivery,
     updateDelivery,
     deleteDelivery,

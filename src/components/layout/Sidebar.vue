@@ -20,7 +20,7 @@ const { isAdmin } = useAuth()
 
 const navItems = [
   { name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { name: 'po-list', label: 'POs', icon: FileText },
+  { name: 'purchase-order-list', label: 'Purchase Orders', icon: FileText },
   { name: 'client-list', label: 'Clients', icon: Users },
   { name: 'product-list', label: 'Products', icon: Package },
 ]
@@ -74,9 +74,9 @@ function isActive(name: string) {
 
     <div class="p-2">
       <Button as-child variant="outline" class="w-full justify-start gap-2">
-        <RouterLink :to="{ name: 'po-create' }">
+        <RouterLink :to="{ name: 'purchase-order-create' }">
           <Plus class="size-4" />
-          New PO
+          New Purchase Order
         </RouterLink>
       </Button>
     </div>

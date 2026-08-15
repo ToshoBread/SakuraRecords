@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { usePO, type Delivery } from '@/composables/usePO'
+import { usePurchaseOrder, type Delivery } from '@/composables/usePurchaseOrder'
+import { useAuth } from '@/composables/useAuth'
+import { formatDate } from '@/lib/format'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,16 +17,17 @@ import { Plus, Pencil } from 'lucide-vue-next'
 const route = useRoute()
 const router = useRouter()
 const {
-  po, loading, error, productsWithRemaining,
-  fetchByPONumber, deleteDelivery, formatCurrency,
-} = usePO()
+  purchaseOrder, loading, error, productsWithRemaining,
+  fetchByPurchaseOrderNumber, deleteDelivery, formatCurrency,
+} = usePurchaseOrder()
+const { isAdmin } = useAuth()
 
-const poNumber = route.params.poNumber as string
+const poNumber = route.params.purchaseOrderNumber as string
 
 const showDeliveryForm = ref(false)
 const editingDelivery = ref<Delivery | null>(null)
 
-onMounted(() => fetchByPONumber(poNumber))
+onMounted(() => fetchByPurchaseOrderNumber(poNumber))
 
 function openAddDelivery() {
   editingDelivery.value = null
@@ -39,7 +42,7 @@ function openEditDelivery(delivery: Delivery) {
 function onDeliveryFormClose() {
   showDeliveryForm.value = false
   editingDelivery.value = null
-  fetchByPONumber(poNumber)
+    fetchByPurchaseOrderNumber(poNumber)
 }
 
 async function handleDeleteDelivery(id: number) {
@@ -47,14 +50,10 @@ async function handleDeleteDelivery(id: number) {
   try {
     await deleteDelivery(id)
     toast.success('Delivery deleted')
-    fetchByPONumber(poNumber)
+  fetchByPurchaseOrderNumber(poNumber)
   } catch (e: any) {
     toast.error(e.message)
   }
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
 
@@ -68,12 +67,12 @@ function formatDate(date: string) {
 
     <div v-else-if="error" class="text-destructive">{{ error }}</div>
 
-    <template v-else-if="po">
+    <template v-else-if="purchaseOrder">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold">{{ po.id }}</h1>
+        <h1 class="text-2xl font-bold">{{ purchaseOrder.id }}</h1>
         <div class="flex gap-2">
           <Button variant="outline" size="sm" as-child>
-            <RouterLink :to="{ name: 'po-edit', params: { poNumber: po.id } }">
+            <RouterLink :to="{ name: 'purchase-order-edit', params: { purchaseOrderNumber: purchaseOrder.id } }">
               <Pencil data-icon="inline-start" />
               Edit
             </RouterLink>
@@ -89,19 +88,19 @@ function formatDate(date: string) {
           <div class="flex justify-between">
             <span class="text-muted-foreground">Client</span>
             <RouterLink
-              :to="{ name: 'client-detail', params: { id: po.client.id } }"
+              :to="{ name: 'client-detail', params: { id: purchaseOrder.client.id } }"
               class="font-medium hover:underline"
             >
-              {{ po.client.name }}
+              {{ purchaseOrder.client.name }}
             </RouterLink>
           </div>
-          <div v-if="po.notes" class="flex justify-between">
+          <div v-if="purchaseOrder.notes" class="flex justify-between">
             <span class="text-muted-foreground">Notes</span>
-            <span class="max-w-[300px] text-right">{{ po.notes }}</span>
+            <span class="max-w-[300px] text-right">{{ purchaseOrder.notes }}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-muted-foreground">Created</span>
-            <span>{{ formatDate(po.created_at) }}</span>
+            <span>{{ formatDate(purchaseOrder.created_at) }}</span>
           </div>
         </CardContent>
       </Card>
@@ -119,7 +118,7 @@ function formatDate(date: string) {
       </div>
 
       <DeliveryTable
-        :deliveries="po.deliveries"
+        :deliveries="purchaseOrder.deliveries"
         :format-currency="formatCurrency"
         @edit="openEditDelivery"
         @delete="handleDeleteDelivery"
@@ -127,9 +126,9 @@ function formatDate(date: string) {
     </template>
 
     <DeliveryForm
-      v-if="showDeliveryForm && po"
-      :po-id="po.id"
-      :client-id="po.clientId"
+      v-if="showDeliveryForm && purchaseOrder"
+      :po-id="purchaseOrder.id"
+      :client-id="purchaseOrder.clientid"
       :products="productsWithRemaining"
       :delivery="editingDelivery"
       @close="onDeliveryFormClose"

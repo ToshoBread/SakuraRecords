@@ -1,29 +1,22 @@
 <script setup lang="ts">
-import type { PO } from '@/composables/usePOs'
+import type { PurchaseOrder } from '@/composables/usePurchaseOrders'
 import { RouterLink } from 'vue-router'
+import { formatDate } from '@/lib/format'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 
 defineProps<{
-  pos: PO[]
+  pos: PurchaseOrder[]
   loading: boolean
 }>()
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
 </script>
 
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-lg">Recent POs</CardTitle>
+      <CardTitle class="text-lg">Recent Purchase Orders</CardTitle>
     </CardHeader>
     <CardContent>
       <div v-if="loading" class="flex flex-col gap-3">
@@ -33,11 +26,11 @@ function formatDate(date: string) {
       <Empty v-else-if="pos.length === 0">
         <EmptyHeader>
           <EmptyTitle>No purchase orders yet</EmptyTitle>
-          <EmptyDescription>Create your first PO to get started.</EmptyDescription>
+          <EmptyDescription>Create your first purchase order to get started.</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <RouterLink :to="{ name: 'po-create' }">
-            <Button>Create PO</Button>
+          <RouterLink :to="{ name: 'purchase-order-create' }">
+            <Button>Create Purchase Order</Button>
           </RouterLink>
         </EmptyContent>
       </Empty>
@@ -46,7 +39,7 @@ function formatDate(date: string) {
         <RouterLink
           v-for="po in pos"
           :key="po.id"
-          :to="{ name: 'po-detail', params: { poNumber: po.id } }"
+          :to="{ name: 'purchase-order-detail', params: { purchaseOrderNumber: po.id } }"
           class="flex items-center justify-between rounded-md border p-3 transition-colors hover:bg-muted"
         >
           <div>

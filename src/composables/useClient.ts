@@ -6,7 +6,7 @@ export interface ClientDetail {
   name: string
   created_at: string
   updated_at: string
-  addresses: { id: number; clientId: number; name: string; address: string }[]
+  addresses: { id: number; clientid: number; name: string; address: string }[]
   purchase_orders: { id: string; created_at: string }[]
 }
 
@@ -29,7 +29,7 @@ export function useClient() {
       .single()
 
     if (err) error.value = err.message
-    else client.value = data as ClientDetail
+    else client.value = data as unknown as ClientDetail
     loading.value = false
   }
 

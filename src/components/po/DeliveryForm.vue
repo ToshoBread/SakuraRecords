@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'vue-sonner'
-import type { ProductWithRemaining, Delivery } from '@/composables/usePO'
+import type { ProductWithRemaining, Delivery } from '@/composables/usePurchaseOrder'
 import { Button } from '@/components/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -23,15 +23,15 @@ const emit = defineEmits<{
 
 const isEditing = computed(() => !!props.delivery)
 
-const productId = ref<string>(props.delivery ? String(props.delivery.productId) : '')
+const productId = ref<string>(props.delivery ? String(props.delivery.productid) : '')
 const shipped_quantity = ref(props.delivery?.shipped_quantity ?? 1)
 const unit_price = ref(props.delivery?.unit_price ?? 0)
 const delivery_date = ref(props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10))
 const payment_terms = ref(props.delivery?.payment_terms ?? 30)
 const paid = ref(props.delivery?.paid ?? false)
-const addressId = ref<string>(props.delivery ? String(props.delivery.addressId) : '')
-const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactionDocumentId) : '')
-const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryRequirementId) : '')
+const addressId = ref<string>(props.delivery ? String(props.delivery.addressid) : '')
+const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactiondocumentid) : '')
+const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryrequirementid) : '')
 
 const addresses = ref<{ id: number; name: string }[]>([])
 const transactionDocuments = ref<{ id: number; document: string }[]>([])
@@ -41,9 +41,9 @@ const submitting = ref(false)
 const error = ref('')
 
 const selectedProductRemaining = computed(() => {
-  const pp = props.products.find(p => p.productId === Number(productId.value))
+  const pp = props.products.find(p => p.productid === Number(productId.value))
   if (!pp) return null
-  if (isEditing.value && props.delivery && props.delivery.productId === Number(productId.value)) {
+  if (isEditing.value && props.delivery && props.delivery.productid === Number(productId.value)) {
     return pp.remaining + Number(props.delivery.shipped_quantity)
   }
   return pp.remaining
@@ -53,7 +53,7 @@ const maxQuantity = computed(() => selectedProductRemaining.value ?? 0)
 
 onMounted(async () => {
   const [addrRes, tdRes, drRes] = await Promise.all([
-    supabase.from('address').select('id, name').eq('clientId', props.clientId).is('deleted_at', null).order('name'),
+    supabase.from('address').select('id, name').eq('clientid', props.clientId).is('deleted_at', null).order('name'),
     supabase.from('transaction_document').select('id, document').is('deleted_at', null).order('document'),
     supabase.from('delivery_requirement').select('id, requirement').is('deleted_at', null).order('requirement'),
   ])
@@ -63,7 +63,7 @@ onMounted(async () => {
 
   if (!productId.value && props.products.length > 0) {
     const firstWithRemaining = props.products.find(p => p.remaining > 0)
-    if (firstWithRemaining) productId.value = String(firstWithRemaining.productId)
+    if (firstWithRemaining) productId.value = String(firstWithRemaining.productid)
   }
 })
 
@@ -76,21 +76,21 @@ async function handleSubmit() {
   error.value = ''
 
   const payload = {
-    poId: props.poId,
-    productId: Number(productId.value),
+    poid: props.poId,
+    productid: Number(productId.value),
     shipped_quantity: Number(shipped_quantity.value),
     unit_price: Number(unit_price.value),
     delivery_date: delivery_date.value,
     payment_terms: Number(payment_terms.value),
     paid: paid.value,
-    addressId: Number(addressId.value),
-    transactionDocumentId: Number(transactionDocumentId.value),
-    deliveryRequirementId: Number(deliveryRequirementId.value),
+    addressid: Number(addressId.value),
+    transactiondocumentid: Number(transactionDocumentId.value),
+    deliveryrequirementid: Number(deliveryRequirementId.value),
   }
 
   try {
     if (isEditing.value && props.delivery) {
-      const { id, poId: _poId, ...updateData } = payload
+      const { poid: _poid, ...updateData } = payload
       const { error: err } = await supabase
         .from('delivery')
         .update({ ...updateData, updated_at: new Date().toISOString() })
@@ -120,7 +120,7 @@ async function handleSubmit() {
       <SheetHeader>
         <SheetTitle>{{ isEditing ? 'Edit Delivery' : 'New Delivery' }}</SheetTitle>
         <SheetDescription>
-          {{ isEditing ? 'Update delivery details.' : 'Record a new delivery for this PO.' }}
+          {{ isEditing ? 'Update delivery details.' : 'Record a new delivery for this purchase order.' }}
         </SheetDescription>
       </SheetHeader>
 
@@ -135,8 +135,8 @@ async function handleSubmit() {
               <SelectContent>
                 <SelectItem
                   v-for="pp in products"
-                  :key="pp.productId"
-                  :value="String(pp.productId)"
+                  :key="pp.productid"
+                  :value="String(pp.productid)"
                 >
                   {{ pp.product.name }} ({{ pp.product.code }})
                 </SelectItem>

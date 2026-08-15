@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProductWithRemaining } from '@/composables/usePO'
+import type { ProductWithRemaining } from '@/composables/usePurchaseOrder'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
@@ -18,7 +18,7 @@ defineProps<{
     <CardContent>
       <Empty v-if="products.length === 0">
         <EmptyHeader>
-          <EmptyTitle>No products on this PO</EmptyTitle>
+          <EmptyTitle>No products on this purchase order</EmptyTitle>
           <EmptyDescription>Add products to this purchase order.</EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -33,7 +33,7 @@ defineProps<{
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow v-for="pp in products" :key="pp.productId">
+          <TableRow v-for="pp in products" :key="pp.productid">
             <TableCell class="font-medium">{{ pp.product.name }}</TableCell>
             <TableCell class="font-mono">{{ pp.product.code }}</TableCell>
             <TableCell class="text-right">{{ pp.ordered_quantity }}</TableCell>

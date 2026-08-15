@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { Delivery } from '@/composables/usePO'
+import type { Delivery } from '@/composables/usePurchaseOrder'
+import { useAuth } from '@/composables/useAuth'
+import { formatDate } from '@/lib/format'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
@@ -17,9 +19,7 @@ const emit = defineEmits<{
   delete: [id: number]
 }>()
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
-}
+const { isAdmin } = useAuth()
 </script>
 
 <template>
@@ -70,7 +70,7 @@ function formatDate(date: string) {
                   <Button variant="ghost" size="sm" @click="emit('edit', d)">
                     <Pencil class="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" @click="emit('delete', d.id)">
+                  <Button v-if="isAdmin" variant="ghost" size="sm" @click="emit('delete', d.id)">
                     <Trash2 class="w-4 h-4 text-destructive" />
                   </Button>
                 </div>

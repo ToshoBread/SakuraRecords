@@ -44,9 +44,6 @@ function initials() {
         </Badge>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem v-if="isAdmin" as-child>
-        <RouterLink :to="{ name: 'settings' }">Settings</RouterLink>
-      </DropdownMenuItem>
       <DropdownMenuItem @click="handleLogout" class="text-destructive">
         <LogOut class="mr-2 size-4" />
         Logout

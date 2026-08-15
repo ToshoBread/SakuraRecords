@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
+import { useTheme } from '@/composables/useTheme'
 import Sonner from "@/components/ui/sonner/Sonner.vue"
 
 const { init, loading } = useAuth()
+const { initTheme } = useTheme()
 
-onMounted(() => init())
+onMounted(() => {
+  initTheme()
+  init()
+})
 </script>
 
 <template>

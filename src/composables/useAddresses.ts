@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 
 export interface Address {
   id: number
-  clientId: number
+  clientid: number
   name: string
   address: string
   created_at: string
@@ -19,7 +19,7 @@ export function useAddresses() {
     const { data } = await supabase
       .from('address')
       .select('*')
-      .eq('clientId', clientId)
+      .eq('clientid', clientId)
       .is('deleted_at', null)
       .order('name')
 
@@ -30,7 +30,7 @@ export function useAddresses() {
   async function create(clientId: number, name: string, address: string) {
     const { data, error } = await supabase
       .from('address')
-      .insert({ clientId, name, address })
+      .insert({ clientid: clientId, name, address })
       .select()
       .single()
 

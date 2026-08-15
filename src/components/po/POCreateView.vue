@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { usePOs } from '@/composables/usePOs'
+import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
 import { useClients } from '@/composables/useClients'
 import { useProducts } from '@/composables/useProducts'
 import { toast } from 'vue-sonner'
@@ -16,11 +16,11 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Plus, Trash2 } from 'lucide-vue-next'
 
 const router = useRouter()
-const { createPO, checkPONumberUnique } = usePOs()
+const { createPurchaseOrder, checkPurchaseOrderNumberUnique } = usePurchaseOrders()
 const { clients, fetchAll: fetchClients } = useClients()
 const { products, fetchAll: fetchProducts } = useProducts()
 
-const poNumber = ref('')
+const purchaseOrderNumber = ref('')
 const clientId = ref<string>('')
 const notes = ref('')
 const selectedProducts = ref<{ productId: number; name: string; code: string; ordered_quantity: number }[]>([])
@@ -28,16 +28,16 @@ const showProductSheet = ref(false)
 const productSearch = ref('')
 const submitting = ref(false)
 const error = ref('')
-const poNumberError = ref('')
+const purchaseOrderNumberError = ref('')
 
 onMounted(async () => {
   await Promise.all([fetchClients(), fetchProducts()])
 })
 
-async function handlePONumberBlur() {
-  if (!poNumber.value.trim()) return
-  const unique = await checkPONumberUnique(poNumber.value.trim())
-  poNumberError.value = unique ? '' : 'PO number already exists'
+async function handlePurchaseOrderNumberBlur() {
+  if (!purchaseOrderNumber.value.trim()) return
+  const unique = await checkPurchaseOrderNumberUnique(purchaseOrderNumber.value.trim())
+  purchaseOrderNumberError.value = unique ? '' : 'Purchase order number already exists'
 }
 
 function addProduct(product: { id: number; name: string; code: string }) {
@@ -70,10 +70,10 @@ const filteredProducts = () => {
 }
 
 const canSubmit = () => {
-  return poNumber.value.trim()
+  return purchaseOrderNumber.value.trim()
     && clientId.value
     && selectedProducts.value.length > 0
-    && !poNumberError.value
+    && !purchaseOrderNumberError.value
     && !submitting.value
 }
 
@@ -83,8 +83,8 @@ async function handleSubmit() {
   submitting.value = true
   error.value = ''
   try {
-    await createPO(
-      poNumber.value.trim(),
+    await createPurchaseOrder(
+      purchaseOrderNumber.value.trim(),
       Number(clientId.value),
       notes.value || null,
       selectedProducts.value.map(p => ({
@@ -93,7 +93,7 @@ async function handleSubmit() {
       }))
     )
     toast.success('Purchase order created')
-    router.push({ name: 'po-detail', params: { poNumber: poNumber.value.trim() } })
+    router.push({ name: 'purchase-order-detail', params: { purchaseOrderNumber: purchaseOrderNumber.value.trim() } })
   } catch (e: any) {
     toast.error(e.message)
     error.value = e.message
@@ -113,16 +113,16 @@ async function handleSubmit() {
         <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
           <FieldGroup>
             <Field>
-              <FieldLabel for="poNumber">PO Number</FieldLabel>
+              <FieldLabel for="purchaseOrderNumber">Purchase Order Number</FieldLabel>
               <Input
-                id="poNumber"
-                v-model="poNumber"
+                id="purchaseOrderNumber"
+                v-model="purchaseOrderNumber"
                 required
                 :disabled="submitting"
                 placeholder="e.g. PO-2026-001"
-                @blur="handlePONumberBlur"
+                @blur="handlePurchaseOrderNumberBlur"
               />
-              <p v-if="poNumberError" class="text-sm text-destructive">{{ poNumberError }}</p>
+              <p v-if="purchaseOrderNumberError" class="text-sm text-destructive">{{ purchaseOrderNumberError }}</p>
             </Field>
 
             <Field>
@@ -216,7 +216,7 @@ async function handleSubmit() {
 
           <div class="flex gap-2">
             <Button type="submit" :disabled="!canSubmit()">
-              {{ submitting ? 'Creating...' : 'Create PO' }}
+              {{ submitting ? 'Creating...' : 'Create Purchase Order' }}
             </Button>
             <Button variant="outline" type="button" @click="router.back()">Cancel</Button>
           </div>
@@ -228,7 +228,7 @@ async function handleSubmit() {
       <SheetContent side="right" class="w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle>Add Product</SheetTitle>
-          <SheetDescription>Select a product to add to this PO</SheetDescription>
+          <SheetDescription>Select a product to add to this purchase order</SheetDescription>
         </SheetHeader>
         <div class="mt-4 flex flex-col gap-4">
           <Input

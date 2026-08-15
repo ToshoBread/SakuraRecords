@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { usePOs } from '@/composables/usePOs'
+import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
 import StatCard from './StatCard.vue'
 import RecentPOList from './RecentPOList.vue'
 
-const { poList, stats, loading, fetchRecent, fetchStats, formatCurrency } = usePOs()
+const { purchaseOrderList, stats, loading, fetchRecent, fetchStats, formatCurrency } = usePurchaseOrders()
 
 onMounted(async () => {
   await Promise.all([fetchRecent(), fetchStats()])
@@ -17,7 +17,7 @@ onMounted(async () => {
 
     <!-- Monthly stats -->
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <StatCard title="Open POs" :value="stats.openPOs" />
+      <StatCard title="Open POs" :value="stats.openPurchaseOrders" />
       <StatCard title="Deliveries This Month" :value="stats.deliveriesThisMonth" />
       <StatCard title="Gross Sales This Month" :value="formatCurrency(stats.grossSalesThisMonth)" />
       <StatCard title="Overdue Payments" :value="stats.overduePayments" />
@@ -30,6 +30,6 @@ onMounted(async () => {
     </div>
 
     <!-- Recent POs -->
-    <RecentPOList :pos="poList" :loading="loading" />
+    <RecentPOList :pos="purchaseOrderList" :loading="loading" />
   </div>
 </template>
