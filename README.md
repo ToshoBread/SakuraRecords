@@ -123,7 +123,7 @@ src/
 The schema uses 8 tables: `client`, `address`, `product`, `purchase_order`, `po_product` (pivot), `delivery`, `transaction_document`, and `delivery_requirement`.
 
 > [!NOTE]
-> See [`docs/schema.md`](docs/schema.md) for the full ERD with constraints, and [`CONTEXT.md`](CONTEXT.md) for the domain glossary.
+> See [`docs/schema.sql`](docs/schema.sql) for the full DDL, [`docs/schema.md`](docs/schema.md) for the ERD, and [`CONTEXT.md`](CONTEXT.md) for the domain glossary.
 
 Key design decisions:
 - **`payment_terms` is per-delivery**, not per-PO (terms vary per shipment)
