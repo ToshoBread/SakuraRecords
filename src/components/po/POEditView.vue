@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePurchaseOrder } from '@/composables/usePurchaseOrder'
 import { useProducts } from '@/composables/useProducts'
+import { purchaseOrderEditSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
@@ -27,7 +28,8 @@ const localProducts = ref<{ productid: number; name: string; code: string; order
 const showProductSheet = ref(false)
 const productSearch = ref('')
 const submitting = ref(false)
-const submitError = ref('')
+const fieldErrors = ref<Record<string, string>>({})
+const serverError = ref('')
 
 const filteredProducts = computed(() => {
   if (!productSearch.value) return allProducts.value
@@ -76,18 +78,27 @@ function updateQuantity(productid: number, qty: number) {
 }
 
 const canSubmit = computed(() => {
-  return localProducts.value.length > 0 && !submitting.value
+  return !submitting.value
 })
 
 async function handleSubmit() {
-  if (!canSubmit.value) return
-
+  const result = purchaseOrderEditSchema.safeParse({
+    notes: notes.value || undefined,
+    products: localProducts.value,
+  })
+  if (!result.success) {
+    fieldErrors.value = Object.fromEntries(
+      result.error.issues.map(i => [i.path[0] as string, i.message])
+    )
+    return
+  }
+  fieldErrors.value = {}
   submitting.value = true
-  submitError.value = ''
+  serverError.value = ''
   try {
     const { error: notesError } = await supabase
       .from('purchase_order')
-      .update({ notes: notes.value || null, updated_at: new Date().toISOString() })
+      .update({ notes: result.data.notes || null, updated_at: new Date().toISOString() })
       .eq('id', poNumber)
 
     if (notesError) throw notesError
@@ -139,7 +150,7 @@ async function handleSubmit() {
     toast.success('Purchase order updated')
   } catch (e: any) {
     toast.error(e.message)
-    submitError.value = e.message
+    serverError.value = e.message
   } finally {
     submitting.value = false
   }
@@ -201,7 +212,10 @@ async function handleSubmit() {
                 </Button>
               </div>
 
-              <div v-if="localProducts.length === 0" class="text-sm text-muted-foreground py-4 text-center border rounded-md">
+              <div v-if="localProducts.length === 0 && fieldErrors.products" class="text-sm text-destructive py-4 text-center border rounded-md">
+                {{ fieldErrors.products }}
+              </div>
+              <div v-else-if="localProducts.length === 0" class="text-sm text-muted-foreground py-4 text-center border rounded-md">
                 No products added yet
               </div>
 
@@ -249,7 +263,7 @@ async function handleSubmit() {
               </p>
             </div>
 
-            <div v-if="submitError" class="text-sm text-destructive">{{ submitError }}</div>
+            <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
 
             <div class="flex gap-2">
               <Button type="submit" :disabled="!canSubmit">

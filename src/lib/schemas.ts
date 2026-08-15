@@ -39,6 +39,16 @@ export const deliverySchema = z.object({
   deliveryRequirementId: z.string().min(1, 'Requirement is required'),
 })
 
+export const purchaseOrderEditSchema = z.object({
+  notes: z.string().max(1000).optional().or(z.literal('')),
+  products: z.array(z.object({
+    productid: z.number(),
+    name: z.string(),
+    code: z.string(),
+    ordered_quantity: z.number().min(1, 'Quantity must be at least 1'),
+  })).min(1, 'At least one product is required'),
+})
+
 export type ClientInput = z.infer<typeof clientSchema>
 export type ProductInput = z.infer<typeof productSchema>
 export type AddressInput = z.infer<typeof addressSchema>
