@@ -37,8 +37,8 @@ function initials() {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" class="w-48">
-      <DropdownMenuLabel class="flex flex-col gap-1">
-        <span class="text-sm">{{ user?.email }}</span>
+      <DropdownMenuLabel class="flex flex-col gap-1 min-w-0">
+        <span class="text-sm truncate">{{ user?.email }}</span>
         <Badge variant="secondary" class="w-fit text-xs">
           {{ role === 'admin' ? 'Admin' : 'Operator' }}
         </Badge>
