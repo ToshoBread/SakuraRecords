@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import type { ProductWithRemaining } from '@/composables/usePO'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+
+defineProps<{
+  products: ProductWithRemaining[]
+}>()
+</script>
+
+<template>
+  <Card>
+    <CardHeader>
+      <CardTitle>Products</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div v-if="products.length === 0" class="text-sm text-muted-foreground py-4 text-center">
+        No products on this PO.
+      </div>
+      <Table v-else>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Product</TableHead>
+            <TableHead>Code</TableHead>
+            <TableHead class="text-right">Ordered</TableHead>
+            <TableHead class="text-right">Shipped</TableHead>
+            <TableHead class="text-right">Remaining</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow v-for="pp in products" :key="pp.productId">
+            <TableCell class="font-medium">{{ pp.product.name }}</TableCell>
+            <TableCell class="font-mono">{{ pp.product.code }}</TableCell>
+            <TableCell class="text-right">{{ pp.ordered_quantity }}</TableCell>
+            <TableCell class="text-right">{{ pp.shipped }}</TableCell>
+            <TableCell class="text-right">
+              <Badge :variant="pp.remaining === 0 ? 'secondary' : 'default'">
+                {{ pp.remaining }}
+              </Badge>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+</template>
