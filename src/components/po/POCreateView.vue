@@ -242,7 +242,7 @@ async function handleSubmit() {
     </Card>
 
     <Sheet v-model:open="showProductSheet">
-      <SheetContent side="right" class="w-[400px] sm:w-[540px]">
+      <SheetContent side="right" class="w-full sm:w-[540px]">
         <SheetHeader>
           <SheetTitle>Add Product</SheetTitle>
           <SheetDescription>Select a product to add to this purchase order</SheetDescription>
