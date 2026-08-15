@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf2f8"/>
+      <stop offset="100%" stop-color="#fce7f3"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9a8d4"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative petals -->
+  <g opacity="0.15">
+    <circle cx="100" cy="80" r="60" fill="#ec4899"/>
+    <circle cx="1100" cy="550" r="80" fill="#ec4899"/>
+    <circle cx="950" cy="100" r="40" fill="#f9a8d4"/>
+    <circle cx="150" cy="500" r="50" fill="#f9a8d4"/>
+  </g>
+
+  <!-- Sakura flower top-right -->
+  <g transform="translate(1050, 120) scale(1.8)" opacity="0.6">
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(0) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(72) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(144) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(216) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(288) translate(0,-7)"/>
+    <circle r="3" fill="#fbbf24"/>
+  </g>
+
+  <!-- Sakura flower bottom-left -->
+  <g transform="translate(150, 500) scale(1.4)" opacity="0.4">
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(0) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(72) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(144) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(216) translate(0,-7)"/>
+    <ellipse rx="4.5" ry="8" fill="#ec4899" transform="rotate(288) translate(0,-7)"/>
+    <circle r="3" fill="#fbbf24"/>
+  </g>
+
+  <!-- Main flower icon -->
+  <g transform="translate(600, 230)">
+    <ellipse rx="18" ry="32" fill="url(#pink)" transform="rotate(0) translate(0,-28)" opacity="0.9"/>
+    <ellipse rx="18" ry="32" fill="url(#pink)" transform="rotate(72) translate(0,-28)" opacity="0.9"/>
+    <ellipse rx="18" ry="32" fill="url(#pink)" transform="rotate(144) translate(0,-28)" opacity="0.9"/>
+    <ellipse rx="18" ry="32" fill="url(#pink)" transform="rotate(216) translate(0,-28)" opacity="0.9"/>
+    <ellipse rx="18" ry="32" fill="url(#pink)" transform="rotate(288) translate(0,-28)" opacity="0.9"/>
+    <circle r="12" fill="#fbbf24"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="340" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#1f2937">
+    SakuraRecords
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="390" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#6b7280">
+    Client Management &amp; Delivery Tracking
+  </text>
+
+  <!-- Accent line -->
+  <rect x="520" y="410" width="160" height="4" rx="2" fill="url(#pink)"/>
+</svg>
