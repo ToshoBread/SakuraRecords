@@ -17,9 +17,13 @@ const { softDelete } = useAddresses()
 
 async function handleDelete(id: number) {
   if (!confirm('Delete this address?')) return
-  await softDelete(id)
-  toast.success('Address deleted')
-  emit('deleted')
+  try {
+    await softDelete(id)
+    toast.success('Address deleted')
+    emit('deleted')
+  } catch (e: any) {
+    toast.error(e.message)
+  }
 }
 </script>
 

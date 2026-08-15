@@ -20,9 +20,13 @@ const product = computed(() => products.value.find(p => p.id === productId))
 
 async function handleDelete() {
   if (!confirm('Delete this product?')) return
-  await softDelete(productId)
-  toast.success('Product deleted')
-  router.push({ name: 'product-list' })
+  try {
+    await softDelete(productId)
+    toast.success('Product deleted')
+    router.push({ name: 'product-list' })
+  } catch (e: any) {
+    toast.error(e.message)
+  }
 }
 
 function formatDate(date: string) {

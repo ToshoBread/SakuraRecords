@@ -42,9 +42,13 @@ function onAddressFormClose() {
 
 async function handleDelete() {
   if (!confirm('Delete this client?')) return
-  await softDelete(clientId)
-  toast.success('Client deleted')
-  router.push({ name: 'client-list' })
+  try {
+    await softDelete(clientId)
+    toast.success('Client deleted')
+    router.push({ name: 'client-list' })
+  } catch (e: any) {
+    toast.error(e.message)
+  }
 }
 
 function formatDate(date: string) {
@@ -129,9 +133,12 @@ function formatDate(date: string) {
           <CardTitle>Purchase Orders</CardTitle>
         </CardHeader>
         <CardContent>
-          <div v-if="client.purchase_orders.length === 0" class="text-sm text-muted-foreground">
-            No purchase orders yet.
-          </div>
+          <Empty v-if="client.purchase_orders.length === 0">
+            <EmptyHeader>
+              <EmptyTitle>No purchase orders</EmptyTitle>
+              <EmptyDescription>No purchase orders for this client yet.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
           <div v-else class="flex flex-col gap-2">
             <RouterLink
               v-for="po in client.purchase_orders"
