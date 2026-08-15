@@ -12,7 +12,7 @@
 | product              | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
 | address              | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
 | purchase_order       | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
-| po_product           | Full CRUD + Hard Delete | Read only                    |
+| po_product           | Full CRUD + Hard Delete | Read + Insert                |
 | delivery             | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
 | transaction_document | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
 | delivery_requirement | Full CRUD + Hard Delete | Full CRUD (soft delete only) |
