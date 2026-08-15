@@ -50,6 +50,11 @@
       "sourceType": "github",
       "skillPath": "skills/vueuse-functions/SKILL.md",
       "computedHash": "665497ecb63a43cef76fafcd1d5b7ec85311060d628452f40f9f9c4114157a83"
+    },
+    "zod": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "aa8a97195b07763d37494b511f48be90979fd6826c031956c831cfc58f6a24b8"
     }
   }
 }

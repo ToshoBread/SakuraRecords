@@ -23,7 +23,7 @@ Single currency: **Philippine peso (₱)**. No currency column — all monetary 
 
 ## Status
 
-Vue 3 + Vite + TypeScript project initialized. Tailwind CSS, shadcn-vue, @supabase/supabase-js, and @vueuse/core installed. Ready for UI/UX implementation.
+Phase 1 MVP is substantially built. All major views exist: Dashboard, Purchase Order (list/create/detail/edit), Client (list/create/detail/edit), Product (list/create/detail/edit). Auth, layout shell, and routing are functional. Zod validation schemas in `src/lib/schemas.ts`. Search with client-side filtering. Role-based UI gating (admin-only delete). Smooth theme transitions. Build passes (`npx vite build`).
 
 ## Skills
 
@@ -41,5 +41,9 @@ Invoke these skills when working on the corresponding areas:
 | `supabase-postgres-best-practices` | When writing or optimizing Postgres queries, schema designs, or database configurations                                   |
 | `typescript-advanced-types`        | When implementing complex type logic, reusable type utilities, or compile-time type safety                                |
 | `subagent-driven-development`      | When executing the implementation plan — fresh subagent per task, two-stage review                                        |
+| `zod`                              | When defining validation schemas — z.object, z.string, safeParse, z.infer for type-safe form and API validation           |
 | `brainstorming`                    | Only if new features are proposed during implementation — design questions                                                |
 | `grill-with-docs`                  | When refining specs or design decisions — stress-test against domain model, sharpen terminology, update CONTEXT.md inline |
+| `caveman`                          | Token-efficient communication mode — ultra-compressed output when context is long                                         |
+| `handoff`                          | When ending a session — compact conversation into handoff document for continuation                                      |
+| `find-skills`                      | When looking for a skill that might exist for a specific task                                                             |
