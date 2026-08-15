@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, RouterLink } from 'vue-router'
 import { useClients } from '@/composables/useClients'
+import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -9,13 +10,18 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '
 import { Skeleton } from '@/components/ui/skeleton'
 import { Plus } from 'lucide-vue-next'
 
+const route = useRoute()
 const { clients, loading, fetchAll } = useClients()
 
-onMounted(() => fetchAll())
+const searchQuery = ref((route.query.q as string) || '')
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
-}
+const filteredClients = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return clients.value
+  return clients.value.filter(c => c.name.toLowerCase().includes(q))
+})
+
+onMounted(() => fetchAll())
 </script>
 
 <template>
@@ -36,7 +42,14 @@ function formatDate(date: string) {
           <Skeleton v-for="i in 5" :key="i" class="h-12 w-full mb-2" />
         </div>
 
-        <Empty v-else-if="clients.length === 0">
+        <Empty v-else-if="filteredClients.length === 0 && searchQuery">
+          <EmptyHeader>
+            <EmptyTitle>No matching clients</EmptyTitle>
+            <EmptyDescription>No clients match "{{ searchQuery }}".</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+
+        <Empty v-else-if="filteredClients.length === 0">
           <EmptyHeader>
             <EmptyTitle>No clients yet</EmptyTitle>
             <EmptyDescription>Add your first client to get started.</EmptyDescription>
@@ -56,7 +69,7 @@ function formatDate(date: string) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="client in clients" :key="client.id">
+            <TableRow v-for="client in filteredClients" :key="client.id">
               <TableCell>
                 <RouterLink
                   :to="{ name: 'client-detail', params: { id: client.id } }"
