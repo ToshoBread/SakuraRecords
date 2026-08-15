@@ -86,7 +86,7 @@ async function handleResetPassword() {
     const data = await res.json()
     if (!res.ok) throw new Error(data.error)
 
-    toast.success(`Password reset for ${selectedUser.value.email}`)
+    toast.success(`Password changed for ${selectedUser.value.email}`)
     showResetSheet.value = false
     selectedUser.value = null
     newPassword.value = ''
@@ -152,7 +152,7 @@ onMounted(fetchUsers)
                   size="sm"
                   @click="openResetSheet(user)"
                 >
-                  Reset Password
+                  Change Password
                 </Button>
               </TableCell>
             </TableRow>
@@ -164,7 +164,7 @@ onMounted(fetchUsers)
     <Sheet v-model:open="showResetSheet">
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Reset Password</SheetTitle>
+          <SheetTitle>Change Password</SheetTitle>
           <SheetDescription>
             Set a new password for {{ selectedUser?.email }}.
           </SheetDescription>
@@ -191,7 +191,7 @@ onMounted(fetchUsers)
               Cancel
             </Button>
             <Button type="submit" :disabled="resetting || newPassword.length < 6">
-              {{ resetting ? 'Resetting...' : 'Reset Password' }}
+              {{ resetting ? 'Saving...' : 'Change Password' }}
             </Button>
           </SheetFooter>
         </form>
