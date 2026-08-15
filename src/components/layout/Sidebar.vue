@@ -2,6 +2,7 @@
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { useAuth } from '@/composables/useAuth'
 import {
   LayoutDashboard,
   FileText,
