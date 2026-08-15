@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/vue':
+        specifier: ^1.31.0
+        version: 1.31.0(vue@3.5.41(typescript@6.0.3))
       '@supabase/supabase-js':
         specifier: ^2.112.3
         version: 2.112.3
@@ -17,6 +20,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      reka-ui:
+        specifier: ^2.10.3
+        version: 2.10.3(vue@3.5.41(typescript@6.0.3))
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
@@ -29,6 +35,9 @@ importers:
       vue-router:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.41(typescript@6.0.3))
+      vue-sonner:
+        specifier: ^2.0.9
+        version: 2.0.9
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -300,6 +309,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lucide/vue@1.31.0':
+    resolution: {integrity: sha512-NtjEHhcAa7umPh40wrRmlESJqNGdnpc7LziBKFnW3fmlrW0g2xMCDpdWU7WeEHRSl3xOpxbqiFTLKxoK3CoVCg==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   '@modelcontextprotocol/sdk@1.30.0':
     resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
@@ -2230,6 +2244,20 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
+  vue-sonner@2.0.9:
+    resolution: {integrity: sha512-i6BokNlNDL93fpzNxN/LZSn6D6MzlO+i3qXt6iVZne3x1k7R46d5HlFB4P8tYydhgqOrRbIZEsnRd3kG7qGXyw==}
+    peerDependencies:
+      '@nuxt/kit': ^4.0.3
+      '@nuxt/schema': ^4.0.3
+      nuxt: ^4.0.3
+    peerDependenciesMeta:
+      '@nuxt/kit':
+        optional: true
+      '@nuxt/schema':
+        optional: true
+      nuxt:
+        optional: true
+
   vue-tsc@3.3.9:
     resolution: {integrity: sha512-TS3Y1ux/IRoE8OCP2PpACAeOseuIs0UvWrcr7u+w3PmfY+SlCfEf8zjrBgnQksHUgLpthi5vHlffcQTQTdPBZA==}
     hasBin: true
@@ -2587,6 +2615,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lucide/vue@1.31.0(vue@3.5.41(typescript@6.0.3))':
+    dependencies:
+      vue: 3.5.41(typescript@6.0.3)
 
   '@modelcontextprotocol/sdk@1.30.0(zod@3.25.76)':
     dependencies:
@@ -4424,6 +4456,8 @@ snapshots:
     dependencies:
       '@vue/devtools-api': 6.6.4
       vue: 3.5.41(typescript@6.0.3)
+
+  vue-sonner@2.0.9: {}
 
   vue-tsc@3.3.9(typescript@6.0.3):
     dependencies:
