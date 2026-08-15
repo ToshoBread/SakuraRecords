@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "82fb11a63fb1e35ee2469516ed02d54695f783115b1540c0e783197af4240a3a"
+    },
     "shadcn-vue": {
       "source": "unovue/shadcn-vue",
       "sourceType": "github",
@@ -13,11 +18,26 @@
       "skillPath": "skills/supabase/SKILL.md",
       "computedHash": "583344c20e90f3654dbb0632f088d89fd9f1dde8ac85e8a644dd12eee59b1380"
     },
+    "supabase-postgres-best-practices": {
+      "source": "supabase/agent-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "4c09c107aa64d7722369c3856ba8743ea11e7450e4f1227cb72a0d375d1e4fd5"
+    },
+    "typescript-advanced-types": {
+      "source": "wshobson/agents",
+      "sourceType": "autoskills-registry",
+      "computedHash": "5ca0e177c6aaaba1889255691224daafdb7d71f317cc70bede1590d3907ded42"
+    },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
       "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
       "computedHash": "523b8063c07eedd2b8a1ca94d7a0be9ad340026bd9f21a1eda0b6be2a855298f"
+    },
+    "vue": {
+      "source": "antfu/skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "4cc429a32520d5a7615d572687c902637459dfd6c92b7faf74afb879247dfbc4"
     },
     "vue-best-practices": {
       "source": "vuejs-ai/skills",
