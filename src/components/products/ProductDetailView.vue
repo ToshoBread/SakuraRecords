@@ -2,6 +2,8 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
+import { useAuth } from '@/composables/useAuth'
+import { formatDate } from '@/lib/format'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +13,7 @@ import { Pencil, Trash2 } from 'lucide-vue-next'
 const route = useRoute()
 const router = useRouter()
 const { products, loading, error, fetchAll, softDelete } = useProducts()
+const { isAdmin } = useAuth()
 
 const productId = Number(route.params.id)
 
@@ -27,10 +30,6 @@ async function handleDelete() {
   } catch (e: any) {
     toast.error(e.message)
   }
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
 
@@ -53,7 +52,7 @@ function formatDate(date: string) {
               Edit
             </RouterLink>
           </Button>
-          <Button variant="destructive" size="sm" @click="handleDelete">
+          <Button v-if="isAdmin" variant="destructive" size="sm" @click="handleDelete">
             <Trash2 data-icon="inline-start" />
             Delete
           </Button>

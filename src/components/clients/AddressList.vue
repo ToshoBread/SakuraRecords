@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useAddresses } from '@/composables/useAddresses'
+import { useAuth } from '@/composables/useAuth'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2 } from 'lucide-vue-next'
 
 const props = defineProps<{
-  addresses: { id: number; clientId: number; name: string; address: string }[]
+  addresses: { id: number; clientid: number; name: string; address: string }[]
 }>()
 
 const emit = defineEmits<{
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const { softDelete } = useAddresses()
+const { isAdmin } = useAuth()
 
 async function handleDelete(id: number) {
   if (!confirm('Delete this address?')) return
@@ -43,7 +45,7 @@ async function handleDelete(id: number) {
           <Pencil data-icon="inline-start" />
           Edit
         </Button>
-        <Button variant="ghost" size="sm" @click="handleDelete(addr.id)">
+        <Button v-if="isAdmin" variant="ghost" size="sm" @click="handleDelete(addr.id)">
           <Trash2 data-icon="inline-start" />
           Delete
         </Button>

@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClient } from '@/composables/useClient'
 import { useClients } from '@/composables/useClients'
+import { useAuth } from '@/composables/useAuth'
+import { formatDate } from '@/lib/format'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,6 +18,7 @@ const route = useRoute()
 const router = useRouter()
 const { client, loading, error, fetchById } = useClient()
 const { softDelete } = useClients()
+const { isAdmin } = useAuth()
 
 const showAddressForm = ref(false)
 const editingAddress = ref<{ id: number; name: string; address: string } | null>(null)
@@ -50,10 +53,6 @@ async function handleDelete() {
     toast.error(e.message)
   }
 }
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
-}
 </script>
 
 <template>
@@ -75,7 +74,7 @@ function formatDate(date: string) {
               Edit
             </RouterLink>
           </Button>
-          <Button variant="destructive" size="sm" @click="handleDelete">
+          <Button v-if="isAdmin" variant="destructive" size="sm" @click="handleDelete">
             <Trash2 data-icon="inline-start" />
             Delete
           </Button>
@@ -143,7 +142,7 @@ function formatDate(date: string) {
             <RouterLink
               v-for="po in client.purchase_orders"
               :key="po.id"
-              :to="{ name: 'po-detail', params: { poNumber: po.id } }"
+              :to="{ name: 'purchase-order-detail', params: { poNumber: po.id } }"
               class="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-accent"
             >
               <span class="font-medium">{{ po.id }}</span>
