@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
+import { productSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +17,8 @@ const name = ref('')
 const code = ref('')
 const description = ref('')
 const submitting = ref(false)
-const error = ref('')
+const fieldErrors = ref<Record<string, string>>({})
+const serverError = ref('')
 const codeError = ref('')
 
 async function handleCodeBlur() {
@@ -26,16 +28,28 @@ async function handleCodeBlur() {
 }
 
 async function handleSubmit() {
+  const result = productSchema.safeParse({
+    name: name.value,
+    code: code.value.trim(),
+    description: description.value || undefined,
+  })
+  if (!result.success) {
+    fieldErrors.value = Object.fromEntries(
+      result.error.issues.map(i => [i.path[0] as string, i.message])
+    )
+    return
+  }
   if (codeError.value) return
+  fieldErrors.value = {}
   submitting.value = true
-  error.value = ''
+  serverError.value = ''
   try {
-    const product = await create(name.value, code.value.trim(), description.value || undefined)
+    const product = await create(result.data.name, result.data.code, result.data.description)
     toast.success('Product created')
     router.push({ name: 'product-detail', params: { id: product.id } })
   } catch (e: any) {
     toast.error(e.message)
-    error.value = e.message
+    serverError.value = e.message
   } finally {
     submitting.value = false
   }
@@ -51,21 +65,23 @@ async function handleSubmit() {
       <CardContent>
         <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
           <FieldGroup>
-            <Field>
+            <Field :data-invalid="!!fieldErrors.name">
               <FieldLabel for="name">Name</FieldLabel>
-              <Input id="name" v-model="name" required :disabled="submitting" />
+              <Input id="name" v-model="name" required :disabled="submitting" aria-invalid="true" />
+              <p v-if="fieldErrors.name" class="text-sm text-destructive">{{ fieldErrors.name }}</p>
             </Field>
-            <Field>
+            <Field :data-invalid="!!fieldErrors.code || !!codeError">
               <FieldLabel for="code">Code</FieldLabel>
-              <Input id="code" v-model="code" required :disabled="submitting" @blur="handleCodeBlur" />
-              <p v-if="codeError" class="text-sm text-destructive">{{ codeError }}</p>
+              <Input id="code" v-model="code" required :disabled="submitting" @blur="handleCodeBlur" aria-invalid="true" />
+              <p v-if="fieldErrors.code" class="text-sm text-destructive">{{ fieldErrors.code }}</p>
+              <p v-else-if="codeError" class="text-sm text-destructive">{{ codeError }}</p>
             </Field>
             <Field>
               <FieldLabel for="description">Description</FieldLabel>
               <Textarea id="description" v-model="description" :disabled="submitting" />
             </Field>
           </FieldGroup>
-          <div v-if="error" class="text-sm text-destructive">{{ error }}</div>
+          <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
           <div class="flex gap-2">
             <Button type="submit" :disabled="submitting || !!codeError">
               {{ submitting ? 'Creating...' : 'Create Product' }}
