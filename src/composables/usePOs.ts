@@ -129,6 +129,36 @@ export function usePOs() {
     }).format(amount)
   }
 
+  async function createPO(poNumber: string, clientId: number, notes: string | null, products: { productId: number; ordered_quantity: number }[]) {
+    const { error: poError } = await supabase
+      .from('purchase_order')
+      .insert({ id: poNumber, clientId, notes })
+
+    if (poError) throw poError
+
+    const pivotRows = products.map(p => ({
+      poId: poNumber,
+      productId: p.productId,
+      ordered_quantity: p.ordered_quantity,
+    }))
+
+    const { error: pivotError } = await supabase
+      .from('po_product')
+      .insert(pivotRows)
+
+    if (pivotError) throw pivotError
+  }
+
+  async function checkPONumberUnique(poNumber: string): Promise<boolean> {
+    const { count } = await supabase
+      .from('purchase_order')
+      .select('*', { count: 'exact', head: true })
+      .eq('id', poNumber)
+      .is('deleted_at', null)
+
+    return count === 0
+  }
+
   return {
     poList,
     stats,
@@ -137,5 +167,7 @@ export function usePOs() {
     fetchRecent,
     fetchStats,
     formatCurrency,
+    createPO,
+    checkPONumberUnique,
   }
 }
