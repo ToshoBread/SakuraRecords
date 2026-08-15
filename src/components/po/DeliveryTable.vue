@@ -2,6 +2,7 @@
 import type { Delivery } from '@/composables/usePO'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2 } from 'lucide-vue-next'
@@ -27,9 +28,12 @@ function formatDate(date: string) {
       <CardTitle>Deliveries</CardTitle>
     </CardHeader>
     <CardContent>
-      <div v-if="deliveries.length === 0" class="text-sm text-muted-foreground py-4 text-center">
-        No deliveries yet.
-      </div>
+      <Empty v-if="deliveries.length === 0">
+        <EmptyHeader>
+          <EmptyTitle>No deliveries yet</EmptyTitle>
+          <EmptyDescription>Add a delivery to record shipment details.</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
       <div v-else class="overflow-x-auto">
         <Table>
           <TableHeader>

@@ -2,6 +2,7 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -20,6 +21,7 @@ const product = computed(() => products.value.find(p => p.id === productId))
 async function handleDelete() {
   if (!confirm('Delete this product?')) return
   await softDelete(productId)
+  toast.success('Product deleted')
   router.push({ name: 'product-list' })
 }
 

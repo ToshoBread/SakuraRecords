@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePO, type Delivery } from '@/composables/usePO'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -44,6 +45,7 @@ function onDeliveryFormClose() {
 async function handleDeleteDelivery(id: number) {
   if (!confirm('Delete this delivery?')) return
   await deleteDelivery(id)
+  toast.success('Delivery deleted')
   fetchByPONumber(poNumber)
 }
 

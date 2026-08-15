@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -28,8 +29,10 @@ async function handleSubmit() {
   error.value = ''
   try {
     await update(clientId, name.value)
+    toast.success('Client updated')
     router.push({ name: 'client-detail', params: { id: clientId } })
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

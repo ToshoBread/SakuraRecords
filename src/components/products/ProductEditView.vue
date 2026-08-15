@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -48,8 +49,10 @@ async function handleSubmit() {
   error.value = ''
   try {
     await update(productId, name.value, code.value.trim(), description.value || undefined)
+    toast.success('Product updated')
     router.push({ name: 'product-detail', params: { id: productId } })
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

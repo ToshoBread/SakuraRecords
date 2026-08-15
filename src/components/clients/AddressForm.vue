@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAddresses } from '@/composables/useAddresses'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -30,11 +31,14 @@ async function handleSubmit() {
   try {
     if (isEditing && props.address) {
       await update(props.address.id, name.value, addressText.value)
+      toast.success('Address updated')
     } else {
       await create(props.clientId, name.value, addressText.value)
+      toast.success('Address added')
     }
     emit('close')
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

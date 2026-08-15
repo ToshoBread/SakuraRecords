@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { toast } from 'vue-sonner'
 import type { ProductWithRemaining, Delivery } from '@/composables/usePO'
 import { Button } from '@/components/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -95,14 +96,17 @@ async function handleSubmit() {
         .update({ ...updateData, updated_at: new Date().toISOString() })
         .eq('id', props.delivery.id)
       if (err) throw err
+      toast.success('Delivery updated')
     } else {
       const { error: err } = await supabase
         .from('delivery')
         .insert(payload)
       if (err) throw err
+      toast.success('Delivery added')
     }
     emit('close')
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

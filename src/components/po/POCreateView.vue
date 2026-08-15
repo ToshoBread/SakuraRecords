@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { usePOs } from '@/composables/usePOs'
 import { useClients } from '@/composables/useClients'
 import { useProducts } from '@/composables/useProducts'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -91,8 +92,10 @@ async function handleSubmit() {
         ordered_quantity: p.ordered_quantity,
       }))
     )
+    toast.success('Purchase order created')
     router.push({ name: 'po-detail', params: { poNumber: poNumber.value.trim() } })
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

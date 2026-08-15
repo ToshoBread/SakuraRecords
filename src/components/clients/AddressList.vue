@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAddresses } from '@/composables/useAddresses'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2 } from 'lucide-vue-next'
 
@@ -17,6 +18,7 @@ const { softDelete } = useAddresses()
 async function handleDelete(id: number) {
   if (!confirm('Delete this address?')) return
   await softDelete(id)
+  toast.success('Address deleted')
   emit('deleted')
 }
 </script>

@@ -2,6 +2,7 @@
 import type { ProductWithRemaining } from '@/composables/usePO'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
 
 defineProps<{
@@ -15,9 +16,12 @@ defineProps<{
       <CardTitle>Products</CardTitle>
     </CardHeader>
     <CardContent>
-      <div v-if="products.length === 0" class="text-sm text-muted-foreground py-4 text-center">
-        No products on this PO.
-      </div>
+      <Empty v-if="products.length === 0">
+        <EmptyHeader>
+          <EmptyTitle>No products on this PO</EmptyTitle>
+          <EmptyDescription>Add products to this purchase order.</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
       <Table v-else>
         <TableHeader>
           <TableRow>

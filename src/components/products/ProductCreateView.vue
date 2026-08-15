@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
@@ -30,8 +31,10 @@ async function handleSubmit() {
   error.value = ''
   try {
     const product = await create(name.value, code.value.trim(), description.value || undefined)
+    toast.success('Product created')
     router.push({ name: 'product-detail', params: { id: product.id } })
   } catch (e: any) {
+    toast.error(e.message)
     error.value = e.message
   } finally {
     submitting.value = false

@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClient } from '@/composables/useClient'
 import { useClients } from '@/composables/useClients'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -42,6 +43,7 @@ function onAddressFormClose() {
 async function handleDelete() {
   if (!confirm('Delete this client?')) return
   await softDelete(clientId)
+  toast.success('Client deleted')
   router.push({ name: 'client-list' })
 }
 
