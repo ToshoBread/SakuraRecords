@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import POProductTable from '@/components/po/POProductTable.vue'
 import DeliveryTable from '@/components/po/DeliveryTable.vue'
 import DeliveryForm from '@/components/po/DeliveryForm.vue'
-import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { Plus, Pencil } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()

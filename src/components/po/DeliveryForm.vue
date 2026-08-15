@@ -23,7 +23,7 @@ const emit = defineEmits<{
 const isEditing = computed(() => !!props.delivery)
 
 const productId = ref<string>(props.delivery ? String(props.delivery.productId) : '')
-const shipped_quantity = ref(props.delivery?.shipment_quantity ?? props.delivery?.shipped_quantity ?? 1)
+const shipped_quantity = ref(props.delivery?.shipped_quantity ?? 1)
 const unit_price = ref(props.delivery?.unit_price ?? 0)
 const delivery_date = ref(props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10))
 const payment_terms = ref(props.delivery?.payment_terms ?? 30)
