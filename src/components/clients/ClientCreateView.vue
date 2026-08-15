@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
-import { clientSchema, type ClientInput } from '@/lib/schemas'
+import { clientSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

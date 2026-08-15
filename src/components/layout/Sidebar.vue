@@ -2,7 +2,6 @@
 import { RouterLink, useRoute } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useAuth } from '@/composables/useAuth'
 import {
   LayoutDashboard,
   FileText,
@@ -16,7 +15,6 @@ defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 
 const route = useRoute()
-const { isAdmin } = useAuth()
 
 const navItems = [
   { name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },

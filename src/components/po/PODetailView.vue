@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { usePurchaseOrder, type Delivery } from '@/composables/usePurchaseOrder'
-import { useAuth } from '@/composables/useAuth'
 import { formatDate } from '@/lib/format'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -15,12 +14,10 @@ import DeliveryForm from '@/components/po/DeliveryForm.vue'
 import { Plus, Pencil } from 'lucide-vue-next'
 
 const route = useRoute()
-const router = useRouter()
 const {
   purchaseOrder, loading, error, productsWithRemaining,
   fetchByPurchaseOrderNumber, deleteDelivery, formatCurrency,
 } = usePurchaseOrder()
-const { isAdmin } = useAuth()
 
 const poNumber = route.params.purchaseOrderNumber as string
 

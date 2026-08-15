@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { LogOut } from 'lucide-vue-next'
 
 const router = useRouter()
-const { user, role, isAdmin, logout } = useAuth()
+const { user, role, logout } = useAuth()
 
 async function handleLogout() {
   await logout()
