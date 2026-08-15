@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import { useAddresses } from '@/composables/useAddresses'
+import { Button } from '@/components/ui/button'
+import { Pencil, Trash2 } from 'lucide-vue-next'
+
+const props = defineProps<{
+  addresses: { id: number; clientId: number; name: string; address: string }[]
+}>()
+
+const emit = defineEmits<{
+  edit: [address: { id: number; name: string; address: string }]
+  deleted: []
+}>()
+
+const { softDelete } = useAddresses()
+
+async function handleDelete(id: number) {
+  if (!confirm('Delete this address?')) return
+  await softDelete(id)
+  emit('deleted')
+}
+</script>
+
+<template>
+  <div class="flex flex-col gap-3">
+    <div
+      v-for="addr in addresses"
+      :key="addr.id"
+      class="flex items-start justify-between rounded-md border p-3"
+    >
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-medium">{{ addr.name }}</span>
+        <span class="text-sm text-muted-foreground">{{ addr.address }}</span>
+      </div>
+      <div class="flex gap-1">
+        <Button variant="ghost" size="sm" @click="emit('edit', addr)">
+          <Pencil data-icon="inline-start" />
+          Edit
+        </Button>
+        <Button variant="ghost" size="sm" @click="handleDelete(addr.id)">
+          <Trash2 data-icon="inline-start" />
+          Delete
+        </Button>
+      </div>
+    </div>
+  </div>
+</template>
