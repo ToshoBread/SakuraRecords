@@ -2,13 +2,16 @@
 import { onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useTheme } from '@/composables/useTheme'
+import { useSettings } from '@/composables/useSettings'
 import Sonner from "@/components/ui/sonner/Sonner.vue"
 
 const { init, loading } = useAuth()
 const { initTheme } = useTheme()
+const { settings } = useSettings()
 
 onMounted(() => {
   initTheme()
+  document.documentElement.setAttribute('data-density', settings.value.density)
   init()
 })
 </script>

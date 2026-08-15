@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -8,6 +9,7 @@ import {
   Users,
   Package,
   Plus,
+  Shield,
   X,
 } from 'lucide-vue-next'
 
@@ -15,12 +17,17 @@ defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 
 const route = useRoute()
+const { isAdmin } = useAuth()
 
 const navItems = [
   { name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { name: 'purchase-order-list', label: 'Purchase Orders', icon: FileText },
   { name: 'client-list', label: 'Clients', icon: Users },
   { name: 'product-list', label: 'Products', icon: Package },
+]
+
+const adminItems = [
+  { name: 'admin', label: 'Admin', icon: Shield },
 ]
 
 function isActive(name: string) {
@@ -68,6 +75,25 @@ function isActive(name: string) {
         <component :is="item.icon" class="size-4" />
         {{ item.label }}
       </RouterLink>
+
+      <template v-if="isAdmin">
+        <Separator class="my-2" />
+        <RouterLink
+          v-for="item in adminItems"
+          :key="item.name"
+          :to="{ name: item.name }"
+          :class="[
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+            isActive(item.name)
+              ? 'bg-primary/10 text-primary'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+          ]"
+          @click="emit('close')"
+        >
+          <component :is="item.icon" class="size-4" />
+          {{ item.label }}
+        </RouterLink>
+      </template>
     </nav>
 
     <div class="p-2">

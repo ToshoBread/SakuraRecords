@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { useSettings } from '@/composables/useSettings'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,6 +29,8 @@ const router = createRouter({
         { path: 'products/new', name: 'product-create', component: () => import('@/components/products/ProductCreateView.vue') },
         { path: 'products/:id', name: 'product-detail', component: () => import('@/components/products/ProductDetailView.vue') },
         { path: 'products/:id/edit', name: 'product-edit', component: () => import('@/components/products/ProductEditView.vue') },
+        { path: 'admin', name: 'admin', component: () => import('@/components/admin/AdminView.vue') },
+        { path: 'settings', name: 'settings', component: () => import('@/components/settings/SettingsView.vue') },
       ],
     },
   ],
@@ -41,7 +44,8 @@ router.beforeEach(async (to) => {
     return { name: 'login' }
   }
   if (to.name === 'login' && session) {
-    return { name: 'dashboard' }
+    const { settings } = useSettings()
+    return { name: settings.value.landingPage }
   }
 })
 

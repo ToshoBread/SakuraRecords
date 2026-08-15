@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { LogOut } from 'lucide-vue-next'
+import { LogOut, Settings } from 'lucide-vue-next'
 
 const router = useRouter()
 const { user, logout } = useAuth()
@@ -39,6 +39,11 @@ function initials() {
       <DropdownMenuLabel>
         <span class="text-sm">{{ user?.email }}</span>
       </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem @click="router.push({ name: 'settings' })">
+        <Settings class="mr-2 size-4" />
+        Settings
+      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleLogout" class="text-destructive">
         <LogOut class="mr-2 size-4" />
