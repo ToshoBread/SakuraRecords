@@ -4,16 +4,19 @@ import { useTheme } from '@/composables/useTheme'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import type { AcceptableValue } from 'reka-ui'
 
 const { settings, setTheme, setDensity, setLandingPage } = useSettings()
 const { applyTheme } = useTheme()
 
-function handleThemeChange(value: string) {
+function handleThemeChange(value: AcceptableValue) {
+  if (typeof value !== 'string') return
   setTheme(value as Theme)
   applyTheme()
 }
 
-function handleDensityChange(value: string) {
+function handleDensityChange(value: AcceptableValue) {
+  if (typeof value !== 'string') return
   setDensity(value as Density)
   document.documentElement.classList.add('density-transition')
   document.documentElement.setAttribute('data-density', value)
@@ -22,7 +25,8 @@ function handleDensityChange(value: string) {
   }, 300)
 }
 
-function handleLandingPageChange(value: string) {
+function handleLandingPageChange(value: AcceptableValue) {
+  if (typeof value !== 'string') return
   setLandingPage(value as LandingPage)
 }
 </script>

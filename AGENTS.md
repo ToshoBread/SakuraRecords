@@ -20,10 +20,11 @@ Single currency: **Philippine peso (₱)**. No currency column — all monetary 
 
 - **`payment_terms` is per-delivery, not per-PO.** Most schemas put payment terms on the order. Ours is on delivery because terms can vary per shipment.
 - **The user is non-tech-savvy.** Every UI decision should optimize for simplicity. Large touch targets, minimal navigation, clear labels. When in doubt, choose the simpler option.
+- **Edge Functions use Deno, not Node.** Located in `supabase/functions/`. Import from `https://esm.sh/`, not npm. Deploy via Supabase MCP `deploy_edge_function` or dashboard.
 
 ## Status
 
-Phase 1 MVP is substantially built. All major views exist: Dashboard, Purchase Order (list/create/detail/edit), Client (list/create/detail/edit), Product (list/create/detail/edit). Auth, layout shell, and routing are functional. Zod validation schemas in `src/lib/schemas.ts`. Search with client-side filtering. Role-based UI gating (admin-only delete). Smooth theme transitions. Build passes (`npx vite build`).
+Phase 1 MVP is substantially built. All major views exist: Dashboard, Purchase Order (list/create/detail/edit), Client (list/create/detail/edit), Product (list/create/detail/edit). Auth, layout shell, and routing are functional. Zod validation schemas in `src/lib/schemas.ts`, wired into all create/edit forms. Search with client-side filtering. Role-based UI gating (admin-only delete). Settings page with theme cycling (light/dark/system), layout density (compact/regular/comfy), and landing page preference — all persisted to localStorage. Admin page for password reset via Edge Function. Smooth theme and density transitions. Build passes (`npx vite build`).
 
 ## Skills
 
