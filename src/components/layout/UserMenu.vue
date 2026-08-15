@@ -11,11 +11,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { LogOut } from 'lucide-vue-next'
 
 const router = useRouter()
-const { user, role, logout } = useAuth()
+const { user, logout } = useAuth()
 
 async function handleLogout() {
   await logout()
@@ -36,12 +35,9 @@ function initials() {
         </Avatar>
       </Button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" class="w-48">
-      <DropdownMenuLabel class="flex flex-col gap-1 min-w-0">
-        <span class="text-sm truncate">{{ user?.email }}</span>
-        <Badge variant="secondary" class="w-fit text-xs">
-          {{ role === 'admin' ? 'Admin' : 'Operator' }}
-        </Badge>
+    <DropdownMenuContent align="end">
+      <DropdownMenuLabel>
+        <span class="text-sm">{{ user?.email }}</span>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleLogout" class="text-destructive">
