@@ -1,5 +1,4 @@
--- SakuraRecords — PostgreSQL Schema
--- Generated from live Supabase project. Run this to recreate the database.
+-- SakuraRecords — Initial Schema Migration
 
 -- =============================================================================
 -- Helper Functions
@@ -174,6 +173,15 @@ CREATE TRIGGER check_delivery_quantity
   EXECUTE FUNCTION validate_delivery_quantity();
 
 -- =============================================================================
+-- Grants: allow PostgREST roles to access tables
+-- =============================================================================
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
+
+-- =============================================================================
 -- RLS Policies
 -- =============================================================================
 
@@ -250,17 +258,3 @@ CREATE POLICY delivery_requirement_insert ON delivery_requirement FOR INSERT TO 
 CREATE POLICY delivery_requirement_update ON delivery_requirement FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY delivery_requirement_delete ON delivery_requirement FOR DELETE TO authenticated
   USING (get_user_role() = 'admin');
-
--- =============================================================================
--- Seed Data
--- =============================================================================
-
-INSERT INTO transaction_document (document) VALUES
-  ('Delivery Receipt and Sales Invoice'),
-  ('Delivery Receipt Only'),
-  ('Sales Invoice Only');
-
-INSERT INTO delivery_requirement (requirement) VALUES
-  ('Certificate of Analysis and Purchase Order'),
-  ('COA Only'),
-  ('PO Only');
