@@ -8,7 +8,7 @@ import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { Pencil, Trash2 } from '@lucide/vue'
 
 const route = useRoute()
 const router = useRouter()

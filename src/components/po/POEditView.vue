@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Plus, Trash2 } from 'lucide-vue-next'
+import { Plus, Trash2 } from '@lucide/vue'
 
 const router = useRouter()
 const route = useRoute()

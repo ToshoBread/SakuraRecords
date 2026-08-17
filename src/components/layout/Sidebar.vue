@@ -11,7 +11,7 @@ import {
   Plus,
   Shield,
   X,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 defineProps<{ open: boolean }>()
 const emit = defineEmits<{ close: [] }>()

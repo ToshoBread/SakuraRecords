@@ -3,7 +3,7 @@ import { useAddresses } from '@/composables/useAddresses'
 import { useAuth } from '@/composables/useAuth'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { Pencil, Trash2 } from '@lucide/vue'
 
 const props = defineProps<{
   addresses: { id: number; clientid: number; name: string; address: string }[]

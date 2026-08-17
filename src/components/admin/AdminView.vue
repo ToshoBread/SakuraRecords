@@ -17,7 +17,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
-import { Shield } from 'lucide-vue-next'
+import { Shield } from '@lucide/vue'
 
 interface User {
   id: string

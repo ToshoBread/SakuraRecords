@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { LogOut, Settings } from 'lucide-vue-next'
+import { LogOut, Settings } from '@lucide/vue'
 
 const router = useRouter()
 const { user, logout } = useAuth()
