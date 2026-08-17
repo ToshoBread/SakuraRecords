@@ -27,7 +27,7 @@ export interface Delivery {
   unit_price: number
   delivery_date: string
   payment_terms: number
-  paid: boolean
+  delivered: boolean
   addressid: number
   transactiondocumentid: number
   deliveryrequirementid: number
@@ -100,7 +100,7 @@ export function usePurchaseOrder() {
     unit_price: number
     delivery_date: string
     payment_terms: number
-    paid: boolean
+    delivered: boolean
     addressid: number
     transactiondocumentid: number
     deliveryrequirementid: number
@@ -118,7 +118,7 @@ export function usePurchaseOrder() {
     unit_price: number
     delivery_date: string
     payment_terms: number
-    paid: boolean
+    delivered: boolean
     addressid: number
     transactiondocumentid: number
     deliveryrequirementid: number

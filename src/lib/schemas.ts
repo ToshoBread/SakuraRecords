@@ -33,7 +33,7 @@ export const deliverySchema = z.object({
   unit_price: z.number().min(0, 'Price must be non-negative'),
   delivery_date: z.string().min(1, 'Date is required'),
   payment_terms: z.number().min(0),
-  paid: z.boolean(),
+  delivered: z.boolean(),
   addressId: z.string().min(1, 'Address is required'),
   transactionDocumentId: z.string().min(1, 'Document type is required'),
   deliveryRequirementId: z.string().min(1, 'Requirement is required'),

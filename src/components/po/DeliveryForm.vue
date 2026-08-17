@@ -19,6 +19,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
+  saved: []
 }>()
 
 const isEditing = computed(() => !!props.delivery)
@@ -28,7 +29,7 @@ const shipped_quantity = ref(props.delivery?.shipped_quantity ?? 1)
 const unit_price = ref(props.delivery?.unit_price ?? 0)
 const delivery_date = ref(props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10))
 const payment_terms = ref(props.delivery?.payment_terms ?? 30)
-const paid = ref(props.delivery?.paid ?? false)
+const delivered = ref(props.delivery?.delivered ?? false)
 const addressId = ref<string>(props.delivery ? String(props.delivery.addressid) : '')
 const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactiondocumentid) : '')
 const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryrequirementid) : '')
@@ -82,7 +83,7 @@ async function handleSubmit() {
     unit_price: Number(unit_price.value),
     delivery_date: delivery_date.value,
     payment_terms: Number(payment_terms.value),
-    paid: paid.value,
+    delivered: delivered.value,
     addressid: Number(addressId.value),
     transactiondocumentid: Number(transactionDocumentId.value),
     deliveryrequirementid: Number(deliveryRequirementId.value),
@@ -104,6 +105,7 @@ async function handleSubmit() {
       if (err) throw err
       toast.success('Delivery added')
     }
+    emit('saved')
     emit('close')
   } catch (e: any) {
     toast.error(e.message)
@@ -199,11 +201,11 @@ async function handleSubmit() {
           <Field>
             <div class="flex items-center gap-3">
               <Switch
-                :checked="paid"
-                @update:checked="paid = $event"
+                :checked="delivered"
+                @update:checked="delivered = $event"
                 :disabled="submitting"
               />
-              <FieldLabel class="mb-0">Paid</FieldLabel>
+              <FieldLabel class="mb-0">Delivered</FieldLabel>
             </div>
           </Field>
 

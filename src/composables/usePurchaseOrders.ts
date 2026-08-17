@@ -16,7 +16,7 @@ export interface DashboardStats {
   openPurchaseOrders: number
   deliveriesThisMonth: number
   grossSalesThisMonth: number
-  overduePayments: number
+  overdueDeliveries: number
   deliveriesThisQuarter: number
   grossSalesThisQuarter: number
 }
@@ -27,7 +27,7 @@ export function usePurchaseOrders() {
     openPurchaseOrders: 0,
     deliveriesThisMonth: 0,
     grossSalesThisMonth: 0,
-    overduePayments: 0,
+    overdueDeliveries: 0,
     deliveriesThisQuarter: 0,
     grossSalesThisQuarter: 0,
   })
@@ -96,17 +96,18 @@ export function usePurchaseOrders() {
       .from('delivery')
       .select('shipped_quantity, unit_price')
       .is('deleted_at', null)
+      .eq('delivered', true)
       .gte('delivery_date', monthStart.slice(0, 10))
 
     const grossSalesThisMonth = monthSales?.reduce(
       (sum, d) => sum + Number(d.shipped_quantity) * Number(d.unit_price), 0
     ) ?? 0
 
-    const { count: overduePayments } = await supabase
+    const { count: overdueDeliveries } = await supabase
       .from('delivery')
       .select('*', { count: 'exact', head: true })
       .is('deleted_at', null)
-      .eq('paid', false)
+      .eq('delivered', false)
       .filter('delivery_date + (payment_terms || \' days\')::interval', 'lt', today)
 
     const { count: deliveriesThisQuarter } = await supabase
@@ -119,6 +120,7 @@ export function usePurchaseOrders() {
       .from('delivery')
       .select('shipped_quantity, unit_price')
       .is('deleted_at', null)
+      .eq('delivered', true)
       .gte('delivery_date', quarterStart.slice(0, 10))
 
     const grossSalesThisQuarter = quarterSales?.reduce(
@@ -129,7 +131,7 @@ export function usePurchaseOrders() {
       openPurchaseOrders: openPurchaseOrders ?? 0,
       deliveriesThisMonth: deliveriesThisMonth ?? 0,
       grossSalesThisMonth,
-      overduePayments: overduePayments ?? 0,
+      overdueDeliveries: overdueDeliveries ?? 0,
       deliveriesThisQuarter: deliveriesThisQuarter ?? 0,
       grossSalesThisQuarter,
     }

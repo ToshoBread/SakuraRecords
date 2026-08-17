@@ -84,7 +84,7 @@ export type Database = {
           delivery_date: string
           deliveryrequirementid: number
           id: number
-          paid: boolean
+          delivered: boolean
           payment_terms: number
           poid: string
           productid: number
@@ -100,7 +100,7 @@ export type Database = {
           delivery_date: string
           deliveryrequirementid: number
           id?: number
-          paid?: boolean
+          delivered?: boolean
           payment_terms?: number
           poid: string
           productid: number
@@ -116,7 +116,7 @@ export type Database = {
           delivery_date?: string
           deliveryrequirementid?: number
           id?: number
-          paid?: boolean
+          delivered?: boolean
           payment_terms?: number
           poid?: string
           productid?: number

@@ -20,7 +20,7 @@ onMounted(async () => {
       <StatCard title="Open POs" :value="stats.openPurchaseOrders" />
       <StatCard title="Deliveries This Month" :value="stats.deliveriesThisMonth" />
       <StatCard title="Gross Sales This Month" :value="formatCurrency(stats.grossSalesThisMonth)" />
-      <StatCard title="Overdue Payments" :value="stats.overduePayments" />
+      <StatCard title="Overdue Deliveries" :value="stats.overdueDeliveries" />
     </div>
 
     <!-- Quarterly stats -->
