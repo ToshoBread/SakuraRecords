@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
 import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/button'
@@ -8,9 +8,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus } from 'lucide-vue-next'
+import { Plus } from '@lucide/vue'
 
 const route = useRoute()
+const router = useRouter()
 const { products, loading, fetchAll } = useProducts()
 
 const searchQuery = ref((route.query.q as string) || '')
@@ -22,6 +23,10 @@ const filteredProducts = computed(() => {
     p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q)
   )
 })
+
+function goToDetail(id: number) {
+  router.push({ name: 'product-detail', params: { id } })
+}
 
 onMounted(() => fetchAll())
 </script>
@@ -73,15 +78,13 @@ onMounted(() => fetchAll())
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="product in filteredProducts" :key="product.id">
-              <TableCell>
-                <RouterLink
-                  :to="{ name: 'product-detail', params: { id: product.id } }"
-                  class="font-medium hover:underline"
-                >
-                  {{ product.code }}
-                </RouterLink>
-              </TableCell>
+            <TableRow
+              v-for="product in filteredProducts"
+              :key="product.id"
+              class="cursor-pointer"
+              @click="goToDetail(product.id)"
+            >
+              <TableCell class="font-medium">{{ product.code }}</TableCell>
               <TableCell>{{ product.name }}</TableCell>
               <TableCell class="text-muted-foreground max-w-[200px] truncate">
                 {{ product.description || '—' }}

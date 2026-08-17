@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
 import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/button'
@@ -8,9 +8,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus } from 'lucide-vue-next'
+import { Plus } from '@lucide/vue'
 
 const route = useRoute()
+const router = useRouter()
 const { clients, loading, fetchAll } = useClients()
 
 const searchQuery = ref((route.query.q as string) || '')
@@ -20,6 +21,10 @@ const filteredClients = computed(() => {
   if (!q) return clients.value
   return clients.value.filter(c => c.name.toLowerCase().includes(q))
 })
+
+function goToDetail(id: number) {
+  router.push({ name: 'client-detail', params: { id } })
+}
 
 onMounted(() => fetchAll())
 </script>
@@ -69,15 +74,13 @@ onMounted(() => fetchAll())
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="client in filteredClients" :key="client.id">
-              <TableCell>
-                <RouterLink
-                  :to="{ name: 'client-detail', params: { id: client.id } }"
-                  class="font-medium hover:underline"
-                >
-                  {{ client.name }}
-                </RouterLink>
-              </TableCell>
+            <TableRow
+              v-for="client in filteredClients"
+              :key="client.id"
+              class="cursor-pointer"
+              @click="goToDetail(client.id)"
+            >
+              <TableCell class="font-medium">{{ client.name }}</TableCell>
               <TableCell class="text-right text-muted-foreground">
                 {{ formatDate(client.created_at) }}
               </TableCell>

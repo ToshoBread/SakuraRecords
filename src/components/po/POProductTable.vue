@@ -26,18 +26,18 @@ defineProps<{
         <TableHeader>
           <TableRow>
             <TableHead>Product</TableHead>
-            <TableHead>Code</TableHead>
-            <TableHead class="text-right">Ordered</TableHead>
-            <TableHead class="text-right">Shipped</TableHead>
+            <TableHead class="hidden sm:table-cell">Code</TableHead>
+            <TableHead class="hidden sm:table-cell text-right">Ordered</TableHead>
+            <TableHead class="hidden sm:table-cell text-right">Shipped</TableHead>
             <TableHead class="text-right">Remaining</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow v-for="pp in products" :key="pp.productid">
             <TableCell class="font-medium">{{ pp.product.name }}</TableCell>
-            <TableCell class="font-mono">{{ pp.product.code }}</TableCell>
-            <TableCell class="text-right">{{ pp.ordered_quantity }}</TableCell>
-            <TableCell class="text-right">{{ pp.shipped }}</TableCell>
+            <TableCell class="hidden sm:table-cell font-mono">{{ pp.product.code }}</TableCell>
+            <TableCell class="hidden sm:table-cell text-right">{{ pp.ordered_quantity }}</TableCell>
+            <TableCell class="hidden sm:table-cell text-right">{{ pp.shipped }}</TableCell>
             <TableCell class="text-right">
               <Badge :variant="pp.remaining === 0 ? 'secondary' : 'default'">
                 {{ pp.remaining }}

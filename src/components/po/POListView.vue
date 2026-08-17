@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useMediaQuery } from '@vueuse/core'
 import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
 import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/button'
@@ -8,10 +9,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus } from 'lucide-vue-next'
+import { Plus } from '@lucide/vue'
 
 const route = useRoute()
+const router = useRouter()
 const { purchaseOrderList, loading, fetchRecent } = usePurchaseOrders()
+const isMobile = useMediaQuery('(max-width: 639px)')
 
 const searchQuery = ref((route.query.q as string) || '')
 
@@ -22,6 +25,10 @@ const filteredPOs = computed(() => {
     po.id.toLowerCase().includes(q) || po.client?.name?.toLowerCase().includes(q)
   )
 })
+
+function goToDetail(poId: string) {
+  router.push({ name: 'purchase-order-detail', params: { purchaseOrderNumber: poId } })
+}
 
 onMounted(() => fetchRecent(50))
 </script>
@@ -63,10 +70,11 @@ onMounted(() => fetchRecent(50))
           </EmptyContent>
         </Empty>
 
-        <Table v-else>
+        <!-- Desktop table -->
+        <Table v-else-if="!isMobile">
           <TableHeader>
             <TableRow>
-              <TableHead>Purchase Order Number</TableHead>
+              <TableHead>PO Number</TableHead>
               <TableHead>Client</TableHead>
               <TableHead class="text-right">Deliveries</TableHead>
               <TableHead class="text-right">Products</TableHead>
@@ -74,15 +82,13 @@ onMounted(() => fetchRecent(50))
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="po in filteredPOs" :key="po.id">
-              <TableCell>
-                <RouterLink
-                  :to="{ name: 'purchase-order-detail', params: { poNumber: po.id } }"
-                  class="font-medium hover:underline"
-                >
-                  {{ po.id }}
-                </RouterLink>
-              </TableCell>
+            <TableRow
+              v-for="po in filteredPOs"
+              :key="po.id"
+              class="cursor-pointer"
+              @click="goToDetail(po.id)"
+            >
+              <TableCell class="font-medium">{{ po.id }}</TableCell>
               <TableCell>{{ po.client?.name }}</TableCell>
               <TableCell class="text-right">{{ po.deliveries?.[0]?.count ?? 0 }}</TableCell>
               <TableCell class="text-right">{{ po.po_products?.[0]?.count ?? 0 }}</TableCell>
@@ -92,6 +98,26 @@ onMounted(() => fetchRecent(50))
             </TableRow>
           </TableBody>
         </Table>
+
+        <!-- Mobile list -->
+        <div v-else class="divide-y">
+          <RouterLink
+            v-for="po in filteredPOs"
+            :key="po.id"
+            :to="{ name: 'purchase-order-detail', params: { purchaseOrderNumber: po.id } }"
+            class="flex items-center justify-between p-4 hover:bg-muted/50"
+          >
+            <div class="min-w-0 flex-1">
+              <p class="font-medium">{{ po.id }}</p>
+              <p class="mt-0.5 truncate text-sm text-muted-foreground">
+                {{ po.client?.name }}
+              </p>
+            </div>
+            <span class="ml-4 shrink-0 text-sm text-muted-foreground">
+              {{ formatDate(po.created_at) }}
+            </span>
+          </RouterLink>
+        </div>
       </CardContent>
     </Card>
   </div>
