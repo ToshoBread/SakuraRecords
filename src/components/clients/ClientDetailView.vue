@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import AddressList from '@/components/clients/AddressList.vue'
 import AddressForm from '@/components/clients/AddressForm.vue'
-import { Pencil, Trash2, MapPin, Plus } from 'lucide-vue-next'
+import { Pencil, Trash2, MapPin, Plus } from '@lucide/vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,6 +40,9 @@ function openEditAddress(addr: { id: number; name: string; address: string }) {
 function onAddressFormClose() {
   showAddressForm.value = false
   editingAddress.value = null
+}
+
+function onAddressSaved() {
   fetchById(clientId)
 }
 
@@ -142,7 +145,7 @@ async function handleDelete() {
             <RouterLink
               v-for="po in client.purchase_orders"
               :key="po.id"
-              :to="{ name: 'purchase-order-detail', params: { poNumber: po.id } }"
+              :to="{ name: 'purchase-order-detail', params: { purchaseOrderNumber: po.id } }"
               class="flex items-center justify-between rounded-md border p-3 text-sm hover:bg-accent"
             >
               <span class="font-medium">{{ po.id }}</span>
@@ -158,6 +161,7 @@ async function handleDelete() {
       :client-id="clientId"
       :address="editingAddress"
       @close="onAddressFormClose"
+      @saved="onAddressSaved"
     />
   </div>
 </template>

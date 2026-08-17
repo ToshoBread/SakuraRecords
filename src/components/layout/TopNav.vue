@@ -5,7 +5,7 @@ import { useTheme } from '@/composables/useTheme'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import UserMenu from './UserMenu.vue'
-import { Menu, Search, Sun, Moon, Monitor } from 'lucide-vue-next'
+import { Menu, Search, Sun, Moon, Monitor } from '@lucide/vue'
 
 defineProps<{
   sidebarToggle: boolean
@@ -38,22 +38,22 @@ function handleSearch() {
 
 <template>
   <header class="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
-    <Button v-if="sidebarToggle" variant="ghost" size="icon" @click="emit('toggleSidebar')">
+    <Button v-if="sidebarToggle" variant="ghost" size="icon" class="shrink-0" @click="emit('toggleSidebar')">
       <Menu class="size-5" />
     </Button>
 
-    <form @submit.prevent="handleSearch" class="flex flex-1 max-w-md items-center gap-2">
-      <div class="relative flex-1">
+    <form @submit.prevent="handleSearch" class="flex min-w-0 flex-1 items-center gap-2">
+      <div class="relative min-w-0 flex-1">
         <Search class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           v-model="searchQuery"
           placeholder="Search..."
-          class="pl-8 h-9"
+          class="h-9 pl-8"
         />
       </div>
     </form>
 
-    <div class="ml-auto flex items-center gap-1">
+    <div class="ml-auto flex shrink-0 items-center gap-1">
       <Button variant="ghost" size="icon" @click="cycleTheme" :title="themeLabel">
         <Sun v-if="themeIcon === 'sun'" class="size-5" />
         <Moon v-else-if="themeIcon === 'moon'" class="size-5" />

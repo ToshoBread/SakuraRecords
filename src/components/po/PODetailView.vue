@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import POProductTable from '@/components/po/POProductTable.vue'
 import DeliveryTable from '@/components/po/DeliveryTable.vue'
 import DeliveryForm from '@/components/po/DeliveryForm.vue'
-import { Plus, Pencil } from 'lucide-vue-next'
+import { Plus, Pencil } from '@lucide/vue'
 
 const route = useRoute()
 const {
@@ -39,7 +39,10 @@ function openEditDelivery(delivery: Delivery) {
 function onDeliveryFormClose() {
   showDeliveryForm.value = false
   editingDelivery.value = null
-    fetchByPurchaseOrderNumber(poNumber)
+}
+
+function onDeliverySaved() {
+  fetchByPurchaseOrderNumber(poNumber)
 }
 
 async function handleDeleteDelivery(id: number) {
@@ -129,6 +132,7 @@ async function handleDeleteDelivery(id: number) {
       :products="productsWithRemaining"
       :delivery="editingDelivery"
       @close="onDeliveryFormClose"
+      @saved="onDeliverySaved"
     />
   </div>
 </template>

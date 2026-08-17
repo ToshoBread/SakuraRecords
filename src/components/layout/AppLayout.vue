@@ -14,10 +14,10 @@ const sidebarOpen = ref(false)
     <!-- Sidebar: visible on desktop, toggle on mobile -->
     <Sidebar :open="isDesktop || sidebarOpen" @close="sidebarOpen = false" />
 
-    <div class="flex flex-1 flex-col">
+    <div class="flex min-w-0 flex-1 flex-col">
       <TopNav :sidebar-toggle="!isDesktop" @toggle-sidebar="sidebarOpen = !sidebarOpen" />
 
-      <main class="flex-1 p-4 lg:p-6">
+      <main class="min-w-0 flex-1 p-4 lg:p-6">
         <RouterView />
       </main>
     </div>

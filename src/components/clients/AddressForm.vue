@@ -15,6 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
+  saved: []
 }>()
 
 const { create, update } = useAddresses()
@@ -46,6 +47,7 @@ async function handleSubmit() {
       await create(props.clientId, result.data.name, result.data.address)
       toast.success('Address added')
     }
+    emit('saved')
     emit('close')
   } catch (e: any) {
     toast.error(e.message)
