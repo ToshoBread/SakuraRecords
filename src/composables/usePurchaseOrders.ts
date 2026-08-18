@@ -61,7 +61,7 @@ export function usePurchaseOrders() {
     const quarterStart = getQuarterStart(now).toISOString()
     const today = now.toISOString()
 
-    // Count open purchase orders (POs with at least one product)
+    // Count open purchase orders (POs with products or undelivered deliveries)
     const { data: allPurchaseOrders } = await supabase
       .from('purchase_order')
       .select('id')
@@ -70,13 +70,25 @@ export function usePurchaseOrders() {
     let openPurchaseOrders = 0
     if (allPurchaseOrders) {
       for (const po of allPurchaseOrders) {
-        const { count } = await supabase
+        const { count: productCount } = await supabase
           .from('po_product')
           .select('*', { count: 'exact', head: true })
           .eq('poid', po.id)
           .is('deleted_at', null)
 
-        if (count && count > 0) openPurchaseOrders++
+        if (productCount && productCount > 0) {
+          openPurchaseOrders++
+          continue
+        }
+
+        const { count: undeliveredCount } = await supabase
+          .from('delivery')
+          .select('*', { count: 'exact', head: true })
+          .eq('poid', po.id)
+          .eq('delivered', false)
+          .is('deleted_at', null)
+
+        if (undeliveredCount && undeliveredCount > 0) openPurchaseOrders++
       }
     }
 
