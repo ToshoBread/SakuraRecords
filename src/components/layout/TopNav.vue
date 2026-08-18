@@ -86,7 +86,7 @@ whenever(() => meta_k.value || control_k.value, () => {
       <Menu class="size-5" />
     </Button>
 
-    <div ref="containerRef" class="relative min-w-0 flex-1">
+    <div ref="containerRef" class="relative min-w-0 max-w-sm flex-1">
       <div class="relative min-w-0 flex-1">
         <Search class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input

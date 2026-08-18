@@ -46,7 +46,7 @@ defineProps<{
             <p class="text-sm font-medium">{{ po.id }}</p>
             <p class="text-xs text-muted-foreground">{{ po.client?.name }}</p>
           </div>
-          <div class="text-right">
+          <div class="text-right hidden sm:block">
             <p class="text-xs text-muted-foreground">{{ formatDate(po.created_at) }}</p>
             <p class="text-xs text-muted-foreground">
               {{ po.deliveries?.[0]?.count ?? 0 }} deliveries
