@@ -8,6 +8,7 @@ export const productSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   code: z.string().min(1, 'Code is required').max(50),
   description: z.string().max(1000).optional().or(z.literal('')),
+  kg: z.number().min(0, 'Weight must be non-negative'),
 })
 
 export const addressSchema = z.object({
@@ -24,6 +25,7 @@ export const purchaseOrderSchema = z.object({
     name: z.string(),
     code: z.string(),
     ordered_quantity: z.number().min(1, 'Quantity must be at least 1'),
+    price_per_kg: z.number().min(0, 'Price must be non-negative'),
   })).min(1, 'At least one product is required'),
 })
 
@@ -46,6 +48,7 @@ export const purchaseOrderEditSchema = z.object({
     name: z.string(),
     code: z.string(),
     ordered_quantity: z.number().min(1, 'Quantity must be at least 1'),
+    price_per_kg: z.number().min(0, 'Price must be non-negative'),
   })).min(1, 'At least one product is required'),
 })
 

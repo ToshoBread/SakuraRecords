@@ -24,7 +24,7 @@ const { products, fetchAll: fetchProducts } = useProducts()
 const purchaseOrderNumber = ref('')
 const clientId = ref<string>('')
 const notes = ref('')
-const selectedProducts = ref<{ productId: number; name: string; code: string; ordered_quantity: number }[]>([])
+const selectedProducts = ref<{ productId: number; name: string; code: string; ordered_quantity: number; price_per_kg: number }[]>([])
 const showProductSheet = ref(false)
 const productSearch = ref('')
 const submitting = ref(false)
@@ -49,6 +49,7 @@ function addProduct(product: { id: number; name: string; code: string }) {
     name: product.name,
     code: product.code,
     ordered_quantity: 1,
+    price_per_kg: 0,
   })
   showProductSheet.value = false
   productSearch.value = ''
@@ -61,6 +62,11 @@ function removeProduct(productId: number) {
 function updateQuantity(productId: number, qty: number) {
   const item = selectedProducts.value.find(p => p.productId === productId)
   if (item) item.ordered_quantity = Math.max(1, qty)
+}
+
+function updatePricePerKg(productId: number, price: number) {
+  const item = selectedProducts.value.find(p => p.productId === productId)
+  if (item) item.price_per_kg = Math.max(0, price)
 }
 
 const filteredProducts = () => {
@@ -101,6 +107,7 @@ async function handleSubmit() {
       result.data.products.map(p => ({
         productId: p.productId,
         ordered_quantity: p.ordered_quantity,
+        price_per_kg: p.price_per_kg,
       }))
     )
     toast.success('Purchase order created')
@@ -195,7 +202,8 @@ async function handleSubmit() {
                 <TableRow>
                   <TableHead>Product</TableHead>
                   <TableHead>Code</TableHead>
-                  <TableHead class="w-32">Quantity</TableHead>
+                  <TableHead class="w-32">Quantity (kg)</TableHead>
+                  <TableHead class="w-32">Price/kg</TableHead>
                   <TableHead class="w-12" />
                 </TableRow>
               </TableHeader>
@@ -209,6 +217,17 @@ async function handleSubmit() {
                       :model-value="item.ordered_quantity"
                       @update:model-value="updateQuantity(item.productId, Number($event))"
                       min="1"
+                      class="h-9"
+                      :disabled="submitting"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      :model-value="item.price_per_kg"
+                      @update:model-value="updatePricePerKg(item.productId, Number($event))"
+                      min="0"
+                      step="0.01"
                       class="h-9"
                       :disabled="submitting"
                     />

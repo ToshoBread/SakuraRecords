@@ -192,6 +192,7 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           ordered_quantity: number
+          price_per_kg: number
           poid: string
           productid: number
           updated_at: string
@@ -200,6 +201,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           ordered_quantity: number
+          price_per_kg?: number
           poid: string
           productid: number
           updated_at?: string
@@ -208,6 +210,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           ordered_quantity?: number
+          price_per_kg?: number
           poid?: string
           productid?: number
           updated_at?: string
@@ -236,6 +239,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: number
+          kg: number
           name: string
           updated_at: string
         }
@@ -245,6 +249,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: number
+          kg?: number
           name: string
           updated_at?: string
         }
@@ -254,6 +259,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: number
+          kg?: number
           name?: string
           updated_at?: string
         }

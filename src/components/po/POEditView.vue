@@ -24,7 +24,7 @@ const { purchaseOrder, loading, error, productsWithRemaining, fetchByPurchaseOrd
 const { products: allProducts, fetchAll: fetchAllProducts } = useProducts()
 
 const notes = ref('')
-const localProducts = ref<{ productid: number; name: string; code: string; ordered_quantity: number; hasDeliveries: boolean }[]>([])
+const localProducts = ref<{ productid: number; name: string; code: string; ordered_quantity: number; price_per_kg: number; hasDeliveries: boolean }[]>([])
 const showProductSheet = ref(false)
 const productSearch = ref('')
 const submitting = ref(false)
@@ -48,6 +48,7 @@ onMounted(async () => {
       name: p.product.name,
       code: p.product.code,
       ordered_quantity: Number(p.ordered_quantity),
+      price_per_kg: Number(p.price_per_kg),
       hasDeliveries: p.shipped > 0,
     }))
   }
@@ -60,6 +61,7 @@ function addProduct(product: { id: number; name: string; code: string }) {
     name: product.name,
     code: product.code,
     ordered_quantity: 1,
+    price_per_kg: 0,
     hasDeliveries: false,
   })
   showProductSheet.value = false
@@ -75,6 +77,11 @@ function removeProduct(productid: number) {
 function updateQuantity(productid: number, qty: number) {
   const item = localProducts.value.find(p => p.productid === productid)
   if (item) item.ordered_quantity = Math.max(1, qty)
+}
+
+function updatePricePerKg(productid: number, price: number) {
+  const item = localProducts.value.find(p => p.productid === productid)
+  if (item) item.price_per_kg = Math.max(0, price)
 }
 
 const canSubmit = computed(() => {
@@ -119,6 +126,7 @@ async function handleSubmit() {
           poid: poNumber,
           productid: p.productid,
           ordered_quantity: p.ordered_quantity,
+          price_per_kg: p.price_per_kg,
         })))
       if (addError) throw addError
     }
@@ -139,7 +147,7 @@ async function handleSubmit() {
       if (currentProductIds.includes(product.productid)) {
         const { error: qtyError } = await supabase
           .from('po_product')
-          .update({ ordered_quantity: product.ordered_quantity })
+          .update({ ordered_quantity: product.ordered_quantity, price_per_kg: product.price_per_kg })
           .eq('poid', poNumber)
           .eq('productid', product.productid)
         if (qtyError) throw qtyError
@@ -224,7 +232,8 @@ async function handleSubmit() {
                   <TableRow>
                     <TableHead>Product</TableHead>
                     <TableHead>Code</TableHead>
-                    <TableHead class="w-32">Quantity</TableHead>
+                    <TableHead class="w-32">Quantity (kg)</TableHead>
+                    <TableHead class="w-32">Price/kg</TableHead>
                     <TableHead class="w-12" />
                   </TableRow>
                 </TableHeader>
@@ -238,6 +247,17 @@ async function handleSubmit() {
                         :model-value="item.ordered_quantity"
                         @update:model-value="updateQuantity(item.productid, Number($event))"
                         min="1"
+                        class="h-9"
+                        :disabled="submitting || item.hasDeliveries"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        :model-value="item.price_per_kg"
+                        @update:model-value="updatePricePerKg(item.productid, Number($event))"
+                        min="0"
+                        step="0.01"
                         class="h-9"
                         :disabled="submitting || item.hasDeliveries"
                       />

@@ -73,6 +73,10 @@ async function handleDelete() {
             <span class="max-w-[300px] text-right">{{ product.description }}</span>
           </div>
           <div class="flex justify-between">
+            <span class="text-muted-foreground">Kilograms per unit</span>
+            <span>{{ product.kg }} kg</span>
+          </div>
+          <div class="flex justify-between">
             <span class="text-muted-foreground">Created</span>
             <span>{{ formatDate(product.created_at) }}</span>
           </div>

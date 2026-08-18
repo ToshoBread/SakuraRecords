@@ -16,6 +16,7 @@ const { create, checkCodeUnique } = useProducts()
 const name = ref('')
 const code = ref('')
 const description = ref('')
+const kg = ref(0)
 const submitting = ref(false)
 const fieldErrors = ref<Record<string, string>>({})
 const serverError = ref('')
@@ -32,6 +33,7 @@ async function handleSubmit() {
     name: name.value,
     code: code.value.trim(),
     description: description.value || undefined,
+    kg: kg.value,
   })
   if (!result.success) {
     fieldErrors.value = Object.fromEntries(
@@ -44,7 +46,7 @@ async function handleSubmit() {
   submitting.value = true
   serverError.value = ''
   try {
-    const product = await create(result.data.name, result.data.code, result.data.description)
+    const product = await create(result.data.name, result.data.code, result.data.description, result.data.kg)
     toast.success('Product created')
     router.push({ name: 'product-detail', params: { id: product.id } })
   } catch (e: any) {
@@ -79,6 +81,11 @@ async function handleSubmit() {
             <Field>
               <FieldLabel for="description">Description</FieldLabel>
               <Textarea id="description" v-model="description" :disabled="submitting" />
+            </Field>
+            <Field :data-invalid="!!fieldErrors.kg">
+              <FieldLabel for="kg">Kilograms per unit</FieldLabel>
+              <Input id="kg" type="number" v-model.number="kg" min="0" step="0.01" :disabled="submitting" aria-invalid="true" />
+              <p v-if="fieldErrors.kg" class="text-sm text-destructive">{{ fieldErrors.kg }}</p>
             </Field>
           </FieldGroup>
           <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>

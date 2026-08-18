@@ -16,6 +16,7 @@ export interface PurchaseOrderProduct {
   poid: string
   productid: number
   ordered_quantity: number
+  price_per_kg: number
   product: { id: number; name: string; code: string }
 }
 
@@ -31,6 +32,7 @@ export interface Delivery {
   addressid: number
   transactiondocumentid: number
   deliveryrequirementid: number
+  deleted_at: string | null
   product: { name: string; code: string }
   address: { name: string }
   transaction_document: { document: string }
@@ -41,6 +43,7 @@ export interface ProductWithRemaining {
   poid: string
   productid: number
   ordered_quantity: number
+  price_per_kg: number
   product: { id: number; name: string; code: string }
   shipped: number
   remaining: number
@@ -55,7 +58,7 @@ export function usePurchaseOrder() {
     if (!purchaseOrder.value) return []
     return purchaseOrder.value.po_products.map(pp => {
       const shipped = purchaseOrder.value!.deliveries
-        .filter(d => d.productid === pp.productid)
+        .filter(d => d.productid === pp.productid && d.delivered && !d.deleted_at)
         .reduce((sum, d) => sum + Number(d.shipped_quantity), 0)
       return {
         ...pp,
@@ -73,7 +76,7 @@ export function usePurchaseOrder() {
         *,
         client:clientid (id, name),
         po_products:po_product (
-          poid, productid, ordered_quantity,
+          poid, productid, ordered_quantity, price_per_kg,
           product:productid (id, name, code)
         ),
         deliveries:delivery (

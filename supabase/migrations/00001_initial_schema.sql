@@ -70,6 +70,7 @@ CREATE TABLE product (
   name VARCHAR(255) NOT NULL,
   code VARCHAR(255) NOT NULL UNIQUE,
   description TEXT,
+  kg NUMERIC NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   deleted_at TIMESTAMPTZ
@@ -88,6 +89,7 @@ CREATE TABLE po_product (
   poid VARCHAR(255) NOT NULL REFERENCES purchase_order(id),
   productid INTEGER NOT NULL REFERENCES product(id),
   ordered_quantity NUMERIC NOT NULL CHECK (ordered_quantity >= 0),
+  price_per_kg NUMERIC NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   deleted_at TIMESTAMPTZ,
@@ -154,6 +156,7 @@ BEGIN
   WHERE d.poid = NEW.poid
     AND d.productid = NEW.productid
     AND d.deleted_at IS NULL
+    AND d.delivered = true
     AND d.id != COALESCE(NEW.id, -1);
 
   new_shipped := already_shipped + NEW.shipped_quantity;

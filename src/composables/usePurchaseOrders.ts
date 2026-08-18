@@ -147,7 +147,7 @@ export function usePurchaseOrders() {
     return new Date(year - 1, 11, 1)                                // Q1: Dec-Feb (starts Dec of prev year)
   }
 
-  async function createPurchaseOrder(purchaseOrderNumber: string, clientId: number, notes: string | null, products: { productId: number; ordered_quantity: number }[]) {
+  async function createPurchaseOrder(purchaseOrderNumber: string, clientId: number, notes: string | null, products: { productId: number; ordered_quantity: number; price_per_kg: number }[]) {
     const { error: poError } = await supabase
       .from('purchase_order')
       .insert({ id: purchaseOrderNumber, clientid: clientId, notes })
@@ -158,6 +158,7 @@ export function usePurchaseOrders() {
       poid: purchaseOrderNumber,
       productid: p.productId,
       ordered_quantity: p.ordered_quantity,
+      price_per_kg: p.price_per_kg,
     }))
 
     const { error: pivotError } = await supabase

@@ -6,6 +6,7 @@ export interface Product {
   name: string
   code: string
   description: string | null
+  kg: number
   created_at: string
 }
 
@@ -27,10 +28,10 @@ export function useProducts() {
     loading.value = false
   }
 
-  async function create(name: string, code: string, description?: string) {
+  async function create(name: string, code: string, description?: string, kg: number = 0) {
     const { data, error: err } = await supabase
       .from('product')
-      .insert({ name, code, description: description || null })
+      .insert({ name, code, description: description || null, kg })
       .select()
       .single()
 
@@ -38,10 +39,10 @@ export function useProducts() {
     return data as Product
   }
 
-  async function update(id: number, name: string, code: string, description?: string) {
+  async function update(id: number, name: string, code: string, description?: string, kg: number = 0) {
     const { error: err } = await supabase
       .from('product')
-      .update({ name, code, description: description || null, updated_at: new Date().toISOString() })
+      .update({ name, code, description: description || null, kg, updated_at: new Date().toISOString() })
       .eq('id', id)
 
     if (err) throw err
