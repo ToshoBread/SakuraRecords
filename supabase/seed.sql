@@ -2,14 +2,14 @@
 
 -- Lookup tables
 INSERT INTO transaction_document (document) VALUES
-  ('Delivery Receipt and Sales Invoice'),
-  ('Delivery Receipt Only'),
-  ('Sales Invoice Only');
+  ('DR & SI'),
+  ('Delivery Receipt'),
+  ('Sales Invoice');
 
 INSERT INTO delivery_requirement (requirement) VALUES
-  ('Certificate of Analysis and Purchase Order'),
-  ('COA Only'),
-  ('PO Only');
+  ('COA & PO'),
+  ('Certificate of Analysis'),
+  ('Purchase Order');
 
 -- Clients
 INSERT INTO client (id, name) OVERRIDING SYSTEM VALUE VALUES

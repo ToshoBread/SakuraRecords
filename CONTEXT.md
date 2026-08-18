@@ -29,7 +29,7 @@ A client-assigned location where deliveries are sent. Identified by a label (nam
 _Avoid_: Location, warehouse
 
 **Transaction Document**:
-A reference lookup for the type of documentation accompanying a delivery (e.g., "Delivery Receipt and Sales Invoice", "Sales Invoice Only"). Global enum, may grow over time.
+A reference lookup for the type of documentation accompanying a delivery (e.g., "DR & SI", "Sales Invoice"). Global enum, may grow over time.
 
 **Delivery Requirement**:
-A reference lookup for special instructions or requirements attached to a delivery (e.g., "Certificate of Analysis and Purchase Order", "COA Only"). Global enum, may grow over time.
+A reference lookup for special instructions or requirements attached to a delivery (e.g., "COA & PO", "Certificate of Analysis"). Global enum, may grow over time.
