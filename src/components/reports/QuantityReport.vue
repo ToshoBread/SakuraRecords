@@ -72,7 +72,7 @@ function exportCSV() {
         <div class="min-h-[300px] w-full">
           <VisXYContainer :data="chartData">
             <VisLine
-              :x="(d: (typeof chartData)[number], i: number) => i"
+              :x="(_d: unknown, i: number) => i"
               :y="yAccessors"
               :color="colors"
               :line-width="2"
