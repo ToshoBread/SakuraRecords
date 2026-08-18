@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import POProductTable from '@/components/po/POProductTable.vue'
 import DeliveryTable from '@/components/po/DeliveryTable.vue'
 import DeliveryForm from '@/components/po/DeliveryForm.vue'
@@ -71,13 +72,20 @@ async function handleDeleteDelivery(id: number) {
 
     <div v-else-if="error" class="text-destructive">{{ error }}</div>
 
+    <Empty v-else-if="!purchaseOrder">
+      <EmptyHeader>
+        <EmptyTitle>Purchase order not found</EmptyTitle>
+        <EmptyDescription>This purchase order may have been deleted.</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+
     <template v-else-if="purchaseOrder">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">{{ purchaseOrder.id }}</h1>
         <div class="flex gap-2">
           <Button variant="outline" size="sm" as-child>
             <RouterLink :to="{ name: 'purchase-order-edit', params: { purchaseOrderNumber: purchaseOrder.id } }">
-              <Pencil data-icon="inline-start" />
+              <Pencil />
               Edit
             </RouterLink>
           </Button>
@@ -116,7 +124,7 @@ async function handleDeleteDelivery(id: number) {
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold">Deliveries</h2>
         <Button size="sm" @click="openAddDelivery">
-          <Plus data-icon="inline-start" />
+          <Plus />
           Add Delivery
         </Button>
       </div>

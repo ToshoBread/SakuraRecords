@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
 import { useAuth } from '@/composables/useAuth'
@@ -8,6 +8,7 @@ import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Pencil, Trash2 } from '@lucide/vue'
 
 const route = useRoute()
@@ -16,6 +17,7 @@ const { products, loading, error, fetchAll, softDelete } = useProducts()
 const { isAdmin } = useAuth()
 
 const productId = Number(route.params.id)
+const deleting = ref(false)
 
 onMounted(() => fetchAll())
 
@@ -23,12 +25,15 @@ const product = computed(() => products.value.find(p => p.id === productId))
 
 async function handleDelete() {
   if (!confirm('Delete this product?')) return
+  deleting.value = true
   try {
     await softDelete(productId)
     toast.success('Product deleted')
     router.push({ name: 'product-list' })
   } catch (e: any) {
     toast.error(e.message)
+  } finally {
+    deleting.value = false
   }
 }
 </script>
@@ -42,19 +47,26 @@ async function handleDelete() {
 
     <div v-else-if="error" class="text-destructive">{{ error }}</div>
 
+    <Empty v-else-if="!product">
+      <EmptyHeader>
+        <EmptyTitle>Product not found</EmptyTitle>
+        <EmptyDescription>This product may have been deleted.</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+
     <template v-else-if="product">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">{{ product.name }}</h1>
         <div class="flex gap-2">
           <Button variant="outline" size="sm" as-child>
             <RouterLink :to="{ name: 'product-edit', params: { id: product.id } }">
-              <Pencil data-icon="inline-start" />
+              <Pencil />
               Edit
             </RouterLink>
           </Button>
-          <Button v-if="isAdmin" variant="destructive" size="sm" @click="handleDelete">
-            <Trash2 data-icon="inline-start" />
-            Delete
+          <Button v-if="isAdmin" variant="destructive" size="sm" :disabled="deleting" @click="handleDelete">
+            <Trash2 />
+            {{ deleting ? 'Deleting...' : 'Delete' }}
           </Button>
         </div>
       </div>

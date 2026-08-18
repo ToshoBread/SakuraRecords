@@ -225,7 +225,7 @@ async function handleSubmit() {
                   @click="showProductSheet = true"
                   :disabled="submitting"
                 >
-                  <Plus class="w-4 h-4 mr-1" />
+                  <Plus class="size-4" />
                   Add Product
                 </Button>
               </div>
@@ -277,11 +277,12 @@ async function handleSubmit() {
                         type="button"
                         variant="ghost"
                         size="sm"
+                        :aria-label="item.hasDeliveries ? 'Cannot remove: product has deliveries' : 'Remove product'"
                         @click="removeProduct(item.productid)"
                         :disabled="submitting || item.hasDeliveries"
                         :title="item.hasDeliveries ? 'Cannot remove: product has deliveries' : 'Remove product'"
                       >
-                        <Trash2 class="w-4 h-4" :class="item.hasDeliveries ? 'text-muted-foreground' : 'text-destructive'" />
+                        <Trash2 class="size-4" :class="item.hasDeliveries ? 'text-muted-foreground' : 'text-destructive'" />
                       </Button>
                     </TableCell>
                   </TableRow>

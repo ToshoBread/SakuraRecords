@@ -22,6 +22,7 @@ const { isAdmin } = useAuth()
 
 const showAddressForm = ref(false)
 const editingAddress = ref<{ id: number; name: string; address: string } | null>(null)
+const deleting = ref(false)
 
 const clientId = Number(route.params.id)
 
@@ -48,12 +49,15 @@ function onAddressSaved() {
 
 async function handleDelete() {
   if (!confirm('Delete this client?')) return
+  deleting.value = true
   try {
     await softDelete(clientId)
     toast.success('Client deleted')
     router.push({ name: 'client-list' })
   } catch (e: any) {
     toast.error(e.message)
+  } finally {
+    deleting.value = false
   }
 }
 </script>
@@ -67,19 +71,26 @@ async function handleDelete() {
 
     <div v-else-if="error" class="text-destructive">{{ error }}</div>
 
+    <Empty v-else-if="!client">
+      <EmptyHeader>
+        <EmptyTitle>Client not found</EmptyTitle>
+        <EmptyDescription>This client may have been deleted.</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+
     <template v-else-if="client">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold">{{ client.name }}</h1>
         <div class="flex gap-2">
           <Button variant="outline" size="sm" as-child>
             <RouterLink :to="{ name: 'client-edit', params: { id: client.id } }">
-              <Pencil data-icon="inline-start" />
+              <Pencil />
               Edit
             </RouterLink>
           </Button>
-          <Button v-if="isAdmin" variant="destructive" size="sm" @click="handleDelete">
-            <Trash2 data-icon="inline-start" />
-            Delete
+          <Button v-if="isAdmin" variant="destructive" size="sm" :disabled="deleting" @click="handleDelete">
+            <Trash2 />
+            {{ deleting ? 'Deleting...' : 'Delete' }}
           </Button>
         </div>
       </div>
@@ -107,7 +118,7 @@ async function handleDelete() {
             Addresses
           </CardTitle>
           <Button size="sm" @click="openAddAddress">
-            <Plus data-icon="inline-start" />
+            <Plus />
             Add Address
           </Button>
         </CardHeader>

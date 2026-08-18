@@ -38,7 +38,7 @@ function handleSearch() {
 
 <template>
   <header class="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
-    <Button v-if="sidebarToggle" variant="ghost" size="icon" class="shrink-0" @click="emit('toggleSidebar')">
+    <Button v-if="sidebarToggle" variant="ghost" size="icon" class="shrink-0" aria-label="Toggle sidebar" @click="emit('toggleSidebar')">
       <Menu class="size-5" />
     </Button>
 
@@ -48,13 +48,14 @@ function handleSearch() {
         <Input
           v-model="searchQuery"
           placeholder="Search..."
+          aria-label="Search"
           class="h-9 pl-8"
         />
       </div>
     </form>
 
     <div class="ml-auto flex shrink-0 items-center gap-1">
-      <Button variant="ghost" size="icon" @click="cycleTheme" :title="themeLabel">
+      <Button variant="ghost" size="icon" :aria-label="`Theme: ${themeLabel}`" @click="cycleTheme" :title="themeLabel">
         <Sun v-if="themeIcon === 'sun'" class="size-5" />
         <Moon v-else-if="themeIcon === 'moon'" class="size-5" />
         <Monitor v-else class="size-5" />

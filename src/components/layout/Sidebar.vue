@@ -52,7 +52,7 @@ function isActive(name: string) {
   >
     <div class="flex h-14 items-center justify-between px-4">
       <span class="text-lg font-semibold">SakuraRecords</span>
-      <Button variant="ghost" size="icon" class="lg:hidden" @click="emit('close')">
+      <Button variant="ghost" size="icon" class="lg:hidden" aria-label="Close sidebar" @click="emit('close')">
         <X class="size-4" />
       </Button>
     </div>

@@ -11,13 +11,17 @@ const sidebarOpen = ref(false)
 
 <template>
   <div class="flex min-h-screen bg-background">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">
+      Skip to content
+    </a>
+
     <!-- Sidebar: visible on desktop, toggle on mobile -->
     <Sidebar :open="isDesktop || sidebarOpen" @close="sidebarOpen = false" />
 
     <div class="flex min-w-0 flex-1 flex-col">
       <TopNav :sidebar-toggle="!isDesktop" @toggle-sidebar="sidebarOpen = !sidebarOpen" />
 
-      <main class="min-w-0 flex-1 p-4 lg:p-6">
+      <main id="main-content" class="min-w-0 flex-1 p-4 lg:p-6" tabindex="-1">
         <RouterView />
       </main>
     </div>

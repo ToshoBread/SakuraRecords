@@ -37,7 +37,7 @@ onMounted(() => fetchAll())
             <h1 class="text-2xl font-bold">Products</h1>
             <Button as-child size="sm">
                 <RouterLink :to="{ name: 'product-create' }">
-                    <Plus data-icon="inline-start" />
+                    <Plus />
                     New Product
                 </RouterLink>
             </Button>
@@ -45,8 +45,8 @@ onMounted(() => fetchAll())
 
         <Card>
             <CardContent class="p-0">
-                <div v-if="loading" class="p-4">
-                    <Skeleton v-for="i in 5" :key="i" class="h-12 w-full mb-2" />
+                <div v-if="loading" class="flex flex-col gap-2 p-4">
+                    <Skeleton v-for="i in 5" :key="i" class="h-12 w-full" />
                 </div>
 
                 <Empty v-else-if="filteredProducts.length === 0 && searchQuery">
@@ -80,7 +80,9 @@ onMounted(() => fetchAll())
                     </TableHeader>
                     <TableBody>
                         <TableRow v-for="product in filteredProducts" :key="product.id" class="cursor-pointer"
-                            @click="goToDetail(product.id)">
+                            role="link" tabindex="0"
+                            @click="goToDetail(product.id)"
+                            @keydown.enter="goToDetail(product.id)">
                             <TableCell class="font-medium">{{ product.code }}</TableCell>
                             <TableCell>{{ product.name }}</TableCell>
                             <TableCell class="text-right">{{ product.kg }} kg</TableCell>

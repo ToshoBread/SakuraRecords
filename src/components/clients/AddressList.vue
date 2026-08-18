@@ -34,7 +34,7 @@ async function handleDelete(id: number) {
     <div
       v-for="addr in addresses"
       :key="addr.id"
-      class="flex items-start justify-between rounded-md border p-3"
+      class="flex items-start justify-between rounded-md border p-3 transition-colors hover:bg-muted/50"
     >
       <div class="flex flex-col gap-1">
         <span class="text-sm font-medium">{{ addr.name }}</span>
@@ -42,11 +42,11 @@ async function handleDelete(id: number) {
       </div>
       <div class="flex gap-1">
         <Button variant="ghost" size="sm" @click="emit('edit', addr)">
-          <Pencil data-icon="inline-start" />
+          <Pencil />
           Edit
         </Button>
         <Button v-if="isAdmin" variant="ghost" size="sm" @click="handleDelete(addr.id)">
-          <Trash2 data-icon="inline-start" />
+          <Trash2 />
           Delete
         </Button>
       </div>

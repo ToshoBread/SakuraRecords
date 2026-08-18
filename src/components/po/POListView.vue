@@ -39,7 +39,7 @@ onMounted(() => fetchRecent(50))
       <h1 class="text-2xl font-bold">Purchase Orders</h1>
       <Button as-child size="sm">
         <RouterLink :to="{ name: 'purchase-order-create' }">
-          <Plus data-icon="inline-start" />
+          <Plus />
           New Purchase Order
         </RouterLink>
       </Button>
@@ -47,8 +47,8 @@ onMounted(() => fetchRecent(50))
 
     <Card>
       <CardContent class="p-0">
-        <div v-if="loading" class="p-4">
-          <Skeleton v-for="i in 5" :key="i" class="h-12 w-full mb-2" />
+        <div v-if="loading" class="flex flex-col gap-2 p-4">
+          <Skeleton v-for="i in 5" :key="i" class="h-12 w-full" />
         </div>
 
         <Empty v-else-if="filteredPOs.length === 0 && searchQuery">
@@ -86,7 +86,10 @@ onMounted(() => fetchRecent(50))
               v-for="po in filteredPOs"
               :key="po.id"
               class="cursor-pointer"
+              role="link"
+              tabindex="0"
               @click="goToDetail(po.id)"
+              @keydown.enter="goToDetail(po.id)"
             >
               <TableCell class="font-medium">{{ po.id }}</TableCell>
               <TableCell>{{ po.client?.name }}</TableCell>

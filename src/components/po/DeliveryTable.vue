@@ -80,11 +80,11 @@ function toggle(id: number) {
                             <TableCell>{{ d.delivery_requirement.requirement }}</TableCell>
                             <TableCell>
                                 <div class="flex gap-1">
-                                    <Button variant="ghost" size="sm" @click="emit('edit', d)">
-                                        <Pencil class="w-4 h-4" />
+                                    <Button variant="ghost" size="sm" aria-label="Edit delivery" @click="emit('edit', d)">
+                                        <Pencil class="size-4" />
                                     </Button>
-                                    <Button v-if="isAdmin" variant="ghost" size="sm" @click="emit('delete', d.id)">
-                                        <Trash2 class="w-4 h-4 text-destructive" />
+                                    <Button v-if="isAdmin" variant="ghost" size="sm" aria-label="Delete delivery" @click="emit('delete', d.id)">
+                                        <Trash2 class="size-4 text-destructive" />
                                     </Button>
                                 </div>
                             </TableCell>
@@ -96,7 +96,7 @@ function toggle(id: number) {
             <!-- Mobile accordion -->
             <div v-else class="divide-y">
                 <div v-for="d in deliveries" :key="d.id">
-                    <button class="flex w-full items-center justify-between p-4 text-left" @click="toggle(d.id)">
+                    <button class="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50" :aria-expanded="expanded.has(d.id)" @click="toggle(d.id)">
                         <div class="min-w-0 flex-1">
                             <p class="font-medium truncate">{{ d.product.name }}</p>
                             <div class="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
@@ -108,11 +108,11 @@ function toggle(id: number) {
                         </div>
                         <div class="ml-4 flex items-center gap-2">
                             <div class="flex gap-1">
-                                <Button variant="ghost" size="sm" @click.stop="emit('edit', d)">
-                                    <Pencil class="w-4 h-4" />
+                                <Button variant="ghost" size="sm" aria-label="Edit delivery" @click.stop="emit('edit', d)">
+                                    <Pencil class="size-4" />
                                 </Button>
-                                <Button v-if="isAdmin" variant="ghost" size="sm" @click.stop="emit('delete', d.id)">
-                                    <Trash2 class="w-4 h-4 text-destructive" />
+                                <Button v-if="isAdmin" variant="ghost" size="sm" aria-label="Delete delivery" @click.stop="emit('delete', d.id)">
+                                    <Trash2 class="size-4 text-destructive" />
                                 </Button>
                             </div>
                             <ChevronDown class="size-4 shrink-0 text-muted-foreground transition-transform duration-200"

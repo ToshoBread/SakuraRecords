@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import {
   Sheet,
   SheetContent,
@@ -113,11 +114,18 @@ onMounted(fetchUsers)
         <CardTitle>Users</CardTitle>
       </CardHeader>
       <CardContent class="p-0">
-        <div v-if="loading" class="p-4">
-          <Skeleton v-for="i in 3" :key="i" class="h-12 w-full mb-2" />
+        <div v-if="loading" class="flex flex-col gap-2 p-4">
+          <Skeleton v-for="i in 3" :key="i" class="h-12 w-full" />
         </div>
 
         <div v-else-if="error" class="p-4 text-sm text-destructive">{{ error }}</div>
+
+        <Empty v-else-if="users.length === 0">
+          <EmptyHeader>
+            <EmptyTitle>No users found</EmptyTitle>
+            <EmptyDescription>No users are registered yet.</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
 
         <Table v-else>
           <TableHeader>

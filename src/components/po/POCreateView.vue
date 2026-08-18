@@ -168,7 +168,7 @@ const onSubmit = handleServerSubmit(async (values) => {
                 @click="showProductSheet = true"
                 :disabled="isSubmitting"
               >
-                <Plus class="w-4 h-4 mr-1" />
+                <Plus class="size-4" />
                 Add Product
               </Button>
             </div>
@@ -220,10 +220,11 @@ const onSubmit = handleServerSubmit(async (values) => {
                       type="button"
                       variant="ghost"
                       size="sm"
+                      aria-label="Remove product"
                       @click="removeProduct(item.productId)"
                       :disabled="isSubmitting"
                     >
-                      <Trash2 class="w-4 h-4 text-destructive" />
+                      <Trash2 class="size-4 text-destructive" />
                     </Button>
                   </TableCell>
                 </TableRow>

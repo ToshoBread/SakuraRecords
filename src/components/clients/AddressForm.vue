@@ -44,7 +44,7 @@ const onSubmit = handleServerSubmit(async (values) => {
 
 <template>
   <Sheet :open="true" @update:open="(v) => !v && emit('close')">
-    <SheetContent side="right" class="w-full sm:max-w-md">
+    <SheetContent side="right" class="w-full sm:max-w-md overflow-y-auto">
       <SheetHeader>
         <SheetTitle>{{ isEditing ? 'Edit Address' : 'New Address' }}</SheetTitle>
         <SheetDescription>
@@ -52,7 +52,7 @@ const onSubmit = handleServerSubmit(async (values) => {
         </SheetDescription>
       </SheetHeader>
 
-      <form @submit.prevent="onSubmit" class="flex flex-col gap-4 px-6">
+      <form @submit.prevent="onSubmit" class="flex flex-col gap-4 px-6 py-4">
         <FieldGroup>
           <Field :data-invalid="!!errors.name">
             <FieldLabel for="addr-name">Label</FieldLabel>
