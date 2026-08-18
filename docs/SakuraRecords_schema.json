@@ -244,6 +244,18 @@
           "comment": "Optional product description"
         },
         {
+          "id": "prod_kg",
+          "name": "kg",
+          "type": "NUMERIC",
+          "default": "0",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Kilograms per unit (informational)"
+        },
+        {
           "id": "ts_product_created_at",
           "name": "created_at",
           "type": "TIMESTAMP",
@@ -424,6 +436,18 @@
           "comment": "Source of truth for ordered quantity"
         },
         {
+          "id": "pivot_price_per_kg",
+          "name": "price_per_kg",
+          "type": "NUMERIC",
+          "default": "0",
+          "check": "",
+          "primary": false,
+          "unique": false,
+          "notNull": true,
+          "increment": false,
+          "comment": "Price per kg for this order"
+        },
+        {
           "id": "ts_pivot_created_at",
           "name": "created_at",
           "type": "TIMESTAMP",
@@ -566,8 +590,8 @@
           "values": []
         },
         {
-          "id": "del_paid",
-          "name": "paid",
+          "id": "del_delivered",
+          "name": "delivered",
           "type": "BOOLEAN",
           "default": "false",
           "check": "",
@@ -575,7 +599,7 @@
           "unique": false,
           "notNull": true,
           "increment": false,
-          "comment": "All-or-nothing payment toggle"
+          "comment": "Whether this delivery has been received"
         },
         {
           "id": "zfNSkSdDnPJSpQF4YaRtk",

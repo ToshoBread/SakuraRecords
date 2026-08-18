@@ -29,6 +29,7 @@
 | name | VARCHAR(255) | NOT NULL |
 | code | VARCHAR(255) | UNIQUE, NOT NULL (editable reference) |
 | description | TEXT | NULL (optional) |
+| kg | NUMERIC | NOT NULL, DEFAULT 0 (informational) |
 | created_at | TIMESTAMP | NOT NULL |
 | updated_at | TIMESTAMP | NOT NULL |
 | deleted_at | TIMESTAMP | NULL (soft delete) |
@@ -49,6 +50,7 @@
 | poId | VARCHAR(255) | FK→purchase_order, PK |
 | productId | INTEGER | FK→product, PK |
 | ordered_quantity | NUMERIC | NOT NULL, CHECK >= 0 |
+| price_per_kg | NUMERIC | NOT NULL, DEFAULT 0 (₱/kg for this order) |
 | created_at | TIMESTAMP | NOT NULL |
 | updated_at | TIMESTAMP | NOT NULL |
 | deleted_at | TIMESTAMP | NULL (soft delete) |
@@ -63,7 +65,7 @@
 | unit_price | NUMERIC | NOT NULL, CHECK >= 0 |
 | delivery_date | DATE | NOT NULL |
 | payment_terms | INTEGER | NOT NULL, DEFAULT 30 |
-| paid | BOOLEAN | NOT NULL, DEFAULT false |
+| delivered | BOOLEAN | NOT NULL, DEFAULT false |
 | addressId | INTEGER | FK→address, NOT NULL |
 | transactionDocumentId | INTEGER | FK→transaction_document, NOT NULL |
 | deliveryRequirementId | INTEGER | FK→delivery_requirement, NOT NULL |
@@ -71,7 +73,7 @@
 | updated_at | TIMESTAMP | NOT NULL |
 | deleted_at | TIMESTAMP | NULL (soft delete) |
 
-**Business rule:** The total `shipped_quantity` across all deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
+**Business rule:** The total `shipped_quantity` across all **delivered** deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Only deliveries with `delivered = true` count toward the shipped total. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
 
 ### transaction_document
 | Column | Type | Constraints |
@@ -111,6 +113,6 @@ delivery_requirement (1) ──→ (N) delivery
 
 ## Reporting Queries
 
-- **Total quantity per product per month:** `SUM(delivery.shipped_quantity)` GROUP BY product, month(delivery_date)
-- **Client with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` JOIN purchase_order GROUP BY client, month
-- **Product with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` JOIN product GROUP BY product, month
+- **Total quantity per product per month:** `SUM(delivery.shipped_quantity)` WHERE `delivered = true` GROUP BY product, month(delivery_date)
+- **Client with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` WHERE `delivered = true` JOIN purchase_order GROUP BY client, month
+- **Product with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` WHERE `delivered = true` JOIN product GROUP BY product, month

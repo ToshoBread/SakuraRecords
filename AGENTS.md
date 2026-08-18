@@ -8,7 +8,7 @@ See `CONTEXT.md` for the glossary. Key terms: Client, Product, Purchase Order (P
 
 ## Schema
 
-`docs/SakuraRecords_schema.json` is the source ERD. `docs/schema.md` is the human-readable version with all constraints and relationships. Database target is **PostgreSQL**.
+`supabase/migrations/00001_initial_schema.sql` is the canonical SQL schema (tables, triggers, RLS, grants). `docs/schema.md` is the human-readable version with all constraints and relationships. `docs/SakuraRecords_schema.json` is the ERD diagram. Database target is **PostgreSQL**.
 
 Single currency: **Philippine peso (₱)**. No currency column — all monetary values are peso.
 
