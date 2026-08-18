@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
+import { formatCurrency } from '@/lib/format'
 import StatCard from './StatCard.vue'
 import RecentPOList from './RecentPOList.vue'
 
-const { purchaseOrderList, stats, loading, fetchRecent, fetchStats, formatCurrency } = usePurchaseOrders()
+const { purchaseOrderList, stats, loading, fetchRecent, fetchStats } = usePurchaseOrders()
 
 onMounted(async () => {
   await Promise.all([fetchRecent(), fetchStats()])

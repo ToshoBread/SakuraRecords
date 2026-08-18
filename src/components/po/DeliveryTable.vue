@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import type { Delivery } from '@/composables/usePurchaseOrder'
 import { useAuth } from '@/composables/useAuth'
-import { formatDate } from '@/lib/format'
+import { formatCurrency, formatDate } from '@/lib/format'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
@@ -13,7 +13,6 @@ import { Pencil, Trash2, ChevronDown } from '@lucide/vue'
 
 defineProps<{
     deliveries: Delivery[]
-    formatCurrency: (amount: number) => string
 }>()
 
 const emit = defineEmits<{

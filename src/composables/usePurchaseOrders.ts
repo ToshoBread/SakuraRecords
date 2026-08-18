@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { formatCurrency } from '@/lib/format'
 
 export interface PurchaseOrder {
   id: string
@@ -62,7 +61,7 @@ export function usePurchaseOrders() {
     const quarterStart = getQuarterStart(now).toISOString()
     const today = now.toISOString()
 
-    // Count open purchase orders
+    // Count open purchase orders (POs with at least one product)
     const { data: allPurchaseOrders } = await supabase
       .from('purchase_order')
       .select('id')
@@ -71,18 +70,13 @@ export function usePurchaseOrders() {
     let openPurchaseOrders = 0
     if (allPurchaseOrders) {
       for (const po of allPurchaseOrders) {
-        const { data: pivots } = await supabase
+        const { count } = await supabase
           .from('po_product')
-          .select('ordered_quantity, productid')
+          .select('*', { count: 'exact', head: true })
           .eq('poid', po.id)
           .is('deleted_at', null)
 
-        if (!pivots || pivots.length === 0) {
-          openPurchaseOrders++
-          continue
-        }
-
-        if (pivots.length > 0) openPurchaseOrders++
+        if (count === 0) openPurchaseOrders++
       }
     }
 
@@ -169,12 +163,13 @@ export function usePurchaseOrders() {
   }
 
   async function checkPurchaseOrderNumberUnique(purchaseOrderNumber: string): Promise<boolean> {
-    const { count } = await supabase
+    const { count, error: err } = await supabase
       .from('purchase_order')
       .select('*', { count: 'exact', head: true })
       .eq('id', purchaseOrderNumber)
       .is('deleted_at', null)
 
+    if (err) throw err
     return count === 0
   }
 
@@ -185,7 +180,6 @@ export function usePurchaseOrders() {
     error,
     fetchRecent,
     fetchStats,
-    formatCurrency,
     createPurchaseOrder,
     checkPurchaseOrderNumberUnique,
   }

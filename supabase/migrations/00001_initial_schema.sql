@@ -229,14 +229,14 @@ CREATE POLICY purchase_order_update ON purchase_order FOR UPDATE TO authenticate
 CREATE POLICY purchase_order_delete ON purchase_order FOR DELETE TO authenticated
   USING (get_user_role() = 'admin');
 
--- po_product (admin-only write)
+-- po_product (operator can read/write/delete; admin can also hard delete via PostgREST)
 CREATE POLICY po_product_select ON po_product FOR SELECT TO authenticated USING (true);
 CREATE POLICY po_product_insert ON po_product FOR INSERT TO authenticated
-  WITH CHECK (get_user_role() = 'admin');
+  WITH CHECK (true);
 CREATE POLICY po_product_update ON po_product FOR UPDATE TO authenticated
-  USING (get_user_role() = 'admin') WITH CHECK (get_user_role() = 'admin');
+  USING (true) WITH CHECK (true);
 CREATE POLICY po_product_delete ON po_product FOR DELETE TO authenticated
-  USING (get_user_role() = 'admin');
+  USING (true);
 
 -- delivery
 CREATE POLICY delivery_select ON delivery FOR SELECT TO authenticated

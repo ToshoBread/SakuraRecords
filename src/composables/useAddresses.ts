@@ -13,18 +13,26 @@ export interface Address {
 export function useAddresses() {
   const addresses = ref<Address[]>([])
   const loading = ref(false)
+  const error = ref<string | null>(null)
 
   async function fetchByClient(clientId: number) {
     loading.value = true
-    const { data } = await supabase
-      .from('address')
-      .select('*')
-      .eq('clientid', clientId)
-      .is('deleted_at', null)
-      .order('name')
+    error.value = null
+    try {
+      const { data, error: err } = await supabase
+        .from('address')
+        .select('*')
+        .eq('clientid', clientId)
+        .is('deleted_at', null)
+        .order('name')
 
-    addresses.value = (data as Address[]) ?? []
-    loading.value = false
+      if (err) error.value = err.message
+      else addresses.value = (data as Address[]) ?? []
+    } catch (e: any) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(clientId: number, name: string, address: string) {
@@ -56,5 +64,5 @@ export function useAddresses() {
     if (error) throw error
   }
 
-  return { addresses, loading, fetchByClient, create, update, softDelete }
+  return { addresses, loading, error, fetchByClient, create, update, softDelete }
 }

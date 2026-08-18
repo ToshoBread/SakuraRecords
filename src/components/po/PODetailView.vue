@@ -16,7 +16,7 @@ import { Plus, Pencil } from '@lucide/vue'
 const route = useRoute()
 const {
   purchaseOrder, loading, error, productsWithRemaining,
-  fetchByPurchaseOrderNumber, deleteDelivery, formatCurrency,
+  fetchByPurchaseOrderNumber, deleteDelivery,
 } = usePurchaseOrder()
 
 const poNumber = route.params.purchaseOrderNumber as string
@@ -123,7 +123,6 @@ async function handleDeleteDelivery(id: number) {
 
       <DeliveryTable
         :deliveries="activeDeliveries"
-        :format-currency="formatCurrency"
         @edit="openEditDelivery"
         @delete="handleDeleteDelivery"
       />

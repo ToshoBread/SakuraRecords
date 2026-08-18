@@ -8,6 +8,7 @@ export interface Product {
   description: string | null
   kg: number
   created_at: string
+  updated_at: string
 }
 
 export function useProducts() {
@@ -17,15 +18,21 @@ export function useProducts() {
 
   async function fetchAll() {
     loading.value = true
-    const { data, error: err } = await supabase
-      .from('product')
-      .select('*')
-      .is('deleted_at', null)
-      .order('name')
+    error.value = null
+    try {
+      const { data, error: err } = await supabase
+        .from('product')
+        .select('*')
+        .is('deleted_at', null)
+        .order('name')
 
-    if (err) error.value = err.message
-    else products.value = data as Product[]
-    loading.value = false
+      if (err) error.value = err.message
+      else products.value = data as Product[]
+    } catch (e: any) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(name: string, code: string, description?: string, kg: number = 0) {
@@ -58,12 +65,13 @@ export function useProducts() {
   }
 
   async function checkCodeUnique(code: string): Promise<boolean> {
-    const { count } = await supabase
+    const { count, error: err } = await supabase
       .from('product')
       .select('*', { count: 'exact', head: true })
       .eq('code', code)
       .is('deleted_at', null)
 
+    if (err) throw err
     return count === 0
   }
 

@@ -33,19 +33,27 @@ const router = createRouter({
         { path: 'settings', name: 'settings', component: () => import('@/components/settings/SettingsView.vue') },
       ],
     },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'dashboard' },
+    },
   ],
 })
 
 router.beforeEach(async (to) => {
-  const { data: { session } } = await supabase.auth.getSession()
-  const requiresAuth = to.meta.requiresAuth !== false
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const requiresAuth = to.meta.requiresAuth !== false
 
-  if (requiresAuth && !session) {
+    if (requiresAuth && !session) {
+      return { name: 'login' }
+    }
+    if (to.name === 'login' && session) {
+      const { settings } = useSettings()
+      return { name: settings.value.landingPage }
+    }
+  } catch {
     return { name: 'login' }
-  }
-  if (to.name === 'login' && session) {
-    const { settings } = useSettings()
-    return { name: settings.value.landingPage }
   }
 })
 

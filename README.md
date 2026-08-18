@@ -93,7 +93,7 @@ Output is in `dist/`. Preview locally with `pnpm preview`.
 | Styling | [Tailwind CSS v4](https://tailwindcss.com/) |
 | UI Components | [shadcn-vue](https://www.shadcn-vue.com/) (Reka UI) |
 | Icons | [Lucide](https://lucide.dev/) |
-| Forms | [Zod](https://zod.dev/) validation, [VeeValidate](https://vee-validate.logaretm.com/) |
+| Forms | [Zod](https://zod.dev/) validation |
 | Backend | [Supabase](https://supabase.com/) (PostgreSQL, Auth, RLS) |
 | Routing | [Vue Router](https://router.vuejs.org/) |
 | Utilities | [VueUse](https://vueuse.org/) |
@@ -109,7 +109,7 @@ src/
 │   ├── clients/         # Client list/create/detail/edit, AddressForm/List
 │   ├── products/        # Product list/create/detail/edit
 │   └── ui/              # shadcn-vue components
-├── composables/         # useAuth, useTheme, usePurchaseOrders, useClients, useProducts
+├── composables/         # useAuth, useTheme, useSettings, useClients, useClient, useProducts, usePurchaseOrders, usePurchaseOrder, useAddresses
 ├── lib/
 │   ├── supabase.ts      # Supabase client singleton
 │   ├── format.ts        # formatCurrency, formatDate
@@ -123,7 +123,7 @@ src/
 The schema uses 8 tables: `client`, `address`, `product`, `purchase_order`, `po_product` (pivot), `delivery`, `transaction_document`, and `delivery_requirement`.
 
 > [!NOTE]
-> See [`docs/schema.sql`](docs/schema.sql) for the full DDL, [`docs/schema.md`](docs/schema.md) for the ERD, and [`CONTEXT.md`](CONTEXT.md) for the domain glossary.
+> See [`supabase/migrations/00001_initial_schema.sql`](supabase/migrations/00001_initial_schema.sql) for the full DDL, [`docs/schema.md`](docs/schema.md) for the human-readable schema, and [`CONTEXT.md`](CONTEXT.md) for the domain glossary.
 
 Key design decisions:
 - **`payment_terms` is per-delivery**, not per-PO (terms vary per shipment)

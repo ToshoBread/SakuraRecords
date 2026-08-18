@@ -15,15 +15,21 @@ export function useClients() {
 
   async function fetchAll() {
     loading.value = true
-    const { data, error: err } = await supabase
-      .from('client')
-      .select('*')
-      .is('deleted_at', null)
-      .order('name')
+    error.value = null
+    try {
+      const { data, error: err } = await supabase
+        .from('client')
+        .select('*')
+        .is('deleted_at', null)
+        .order('name')
 
-    if (err) error.value = err.message
-    else clients.value = data as Client[]
-    loading.value = false
+      if (err) error.value = err.message
+      else clients.value = data as Client[]
+    } catch (e: any) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
   }
 
   async function create(name: string) {

@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useTheme } from '@/composables/useTheme'
 import { useSettings } from '@/composables/useSettings'
-import Sonner from "@/components/ui/sonner/Sonner.vue"
+import { Toaster } from "@/components/ui/sonner"
 
 const { init, loading } = useAuth()
 const { initTheme } = useTheme()
@@ -21,5 +21,5 @@ onMounted(() => {
     <div class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
   </div>
   <RouterView v-else />
-  <Sonner />
+  <Toaster />
 </template>
