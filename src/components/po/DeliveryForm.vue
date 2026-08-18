@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { formatCurrency } from '@/lib/format'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { deliverySchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import type { ProductWithRemaining, Delivery } from '@/composables/usePurchaseOrder'
 import { Button } from '@/components/ui/button'
@@ -24,21 +27,32 @@ const emit = defineEmits<{
 
 const isEditing = computed(() => !!props.delivery)
 
-const productId = ref<string>(props.delivery ? String(props.delivery.productid) : '')
-const shipped_quantity = ref(props.delivery?.shipped_quantity ?? 1)
-const delivery_date = ref(props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10))
-const payment_terms = ref(props.delivery?.payment_terms ?? 30)
-const delivered = ref(props.delivery?.delivered ?? false)
-const addressId = ref<string>(props.delivery ? String(props.delivery.addressid) : '')
-const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactiondocumentid) : '1')
-const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryrequirementid) : '1')
+const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
+  deliverySchema,
+  {
+    productId: props.delivery ? String(props.delivery.productid) : '',
+    shipped_quantity: props.delivery?.shipped_quantity ?? 1,
+    delivery_date: props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10),
+    payment_terms: props.delivery?.payment_terms ?? 30,
+    delivered: props.delivery?.delivered ?? false,
+    addressId: props.delivery ? String(props.delivery.addressid) : '',
+    transactionDocumentId: props.delivery ? String(props.delivery.transactiondocumentid) : '1',
+    deliveryRequirementId: props.delivery ? String(props.delivery.deliveryrequirementid) : '1',
+  },
+)
+
+const [productId] = defineField('productId')
+const [shipped_quantity, shipped_quantityAttrs] = defineField('shipped_quantity')
+const [delivery_date, delivery_dateAttrs] = defineField('delivery_date')
+const [payment_terms, payment_termsAttrs] = defineField('payment_terms')
+const [delivered] = defineField('delivered')
+const [addressId] = defineField('addressId')
+const [transactionDocumentId] = defineField('transactionDocumentId')
+const [deliveryRequirementId] = defineField('deliveryRequirementId')
 
 const addresses = ref<{ id: number; name: string }[]>([])
 const transactionDocuments = ref<{ id: number; document: string }[]>([])
 const deliveryRequirements = ref<{ id: number; requirement: string }[]>([])
-
-const submitting = ref(false)
-const error = ref('')
 
 const selectedProductRemaining = computed(() => {
   const pp = props.products.find(p => p.productid === Number(productId.value))
@@ -74,52 +88,38 @@ onMounted(async () => {
   }
 })
 
-async function handleSubmit() {
-  if (!productId.value || !addressId.value || !transactionDocumentId.value || !deliveryRequirementId.value) return
-  if (Number(shipped_quantity.value) <= 0) return
-  if (maxQuantity.value !== null && Number(shipped_quantity.value) > maxQuantity.value) return
-
-  submitting.value = true
-  error.value = ''
-
+const onSubmit = handleServerSubmit(async (values) => {
   const payload = {
     poid: props.poId,
-    productid: Number(productId.value),
-    shipped_quantity: Number(shipped_quantity.value),
+    productid: Number(values.productId),
+    shipped_quantity: Number(values.shipped_quantity),
     unit_price: selectedProductPricePerKg.value,
-    delivery_date: delivery_date.value,
-    payment_terms: Number(payment_terms.value),
-    delivered: delivered.value,
-    addressid: Number(addressId.value),
-    transactiondocumentid: Number(transactionDocumentId.value),
-    deliveryrequirementid: Number(deliveryRequirementId.value),
+    delivery_date: values.delivery_date,
+    payment_terms: Number(values.payment_terms),
+    delivered: values.delivered,
+    addressid: Number(values.addressId),
+    transactiondocumentid: Number(values.transactionDocumentId),
+    deliveryrequirementid: Number(values.deliveryRequirementId),
   }
 
-  try {
-    if (isEditing.value && props.delivery) {
-      const { poid: _poid, ...updateData } = payload
-      const { error: err } = await supabase
-        .from('delivery')
-        .update({ ...updateData, updated_at: new Date().toISOString() })
-        .eq('id', props.delivery.id)
-      if (err) throw err
-      toast.success('Delivery updated')
-    } else {
-      const { error: err } = await supabase
-        .from('delivery')
-        .insert(payload)
-      if (err) throw err
-      toast.success('Delivery added')
-    }
-    emit('saved')
-    emit('close')
-  } catch (e: any) {
-    toast.error(e.message)
-    error.value = e.message
-  } finally {
-    submitting.value = false
+  if (isEditing.value && props.delivery) {
+    const { poid: _poid, ...updateData } = payload
+    const { error: err } = await supabase
+      .from('delivery')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', props.delivery.id)
+    if (err) throw err
+    toast.success('Delivery updated')
+  } else {
+    const { error: err } = await supabase
+      .from('delivery')
+      .insert(payload)
+    if (err) throw err
+    toast.success('Delivery added')
   }
-}
+  emit('saved')
+  emit('close')
+})
 </script>
 
 <template>
@@ -132,11 +132,11 @@ async function handleSubmit() {
         </SheetDescription>
       </SheetHeader>
 
-      <form @submit.prevent="handleSubmit" class="flex flex-col gap-4 px-6 py-4">
+      <form @submit.prevent="onSubmit" class="flex flex-col gap-4 px-6 py-4">
         <FieldGroup>
-          <Field>
+          <Field :data-invalid="!!errors.productId">
             <FieldLabel>Product</FieldLabel>
-            <Select v-model="productId" :disabled="submitting || isEditing">
+            <Select v-model="productId" :disabled="isSubmitting || isEditing">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select product" />
               </SelectTrigger>
@@ -150,20 +150,24 @@ async function handleSubmit() {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p v-if="errors.productId" class="text-sm text-destructive">{{ errors.productId }}</p>
           </Field>
 
-          <Field>
+          <Field :data-invalid="!!errors.shipped_quantity">
             <FieldLabel for="qty">Shipped Quantity (kg)</FieldLabel>
             <Input
               id="qty"
               type="number"
               v-model="shipped_quantity"
+              v-bind="shipped_quantityAttrs"
               :min="1"
               :max="maxQuantity ?? undefined"
               required
-              :disabled="submitting"
+              :disabled="isSubmitting"
+              :aria-invalid="!!errors.shipped_quantity"
             />
-            <p v-if="maxQuantity !== null" class="text-xs text-muted-foreground">
+            <p v-if="errors.shipped_quantity" class="text-sm text-destructive">{{ errors.shipped_quantity }}</p>
+            <p v-else-if="maxQuantity !== null" class="text-xs text-muted-foreground">
               Max: {{ maxQuantity }} kg
             </p>
           </Field>
@@ -171,50 +175,56 @@ async function handleSubmit() {
           <div class="rounded-md border px-4 py-3 text-sm">
             <div class="flex justify-between">
               <span class="text-muted-foreground">Price/kg</span>
-              <span>₱{{ selectedProductPricePerKg.toFixed(2) }}</span>
+              <span>{{ formatCurrency(selectedProductPricePerKg) }}</span>
             </div>
             <div class="flex justify-between font-medium mt-1">
               <span>Total</span>
-              <span>₱{{ totalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 }) }}</span>
+              <span>{{ formatCurrency(totalPrice) }}</span>
             </div>
           </div>
 
-          <Field>
+          <Field :data-invalid="!!errors.delivery_date">
             <FieldLabel for="date">Delivery Date</FieldLabel>
             <Input
               id="date"
               type="date"
               v-model="delivery_date"
+              v-bind="delivery_dateAttrs"
               required
-              :disabled="submitting"
+              :disabled="isSubmitting"
+              :aria-invalid="!!errors.delivery_date"
             />
+            <p v-if="errors.delivery_date" class="text-sm text-destructive">{{ errors.delivery_date }}</p>
           </Field>
 
-          <Field>
+          <Field :data-invalid="!!errors.payment_terms">
             <FieldLabel for="terms">Payment Terms (days)</FieldLabel>
             <Input
               id="terms"
               type="number"
               v-model="payment_terms"
+              v-bind="payment_termsAttrs"
               min="0"
               required
-              :disabled="submitting"
+              :disabled="isSubmitting"
+              :aria-invalid="!!errors.payment_terms"
             />
+            <p v-if="errors.payment_terms" class="text-sm text-destructive">{{ errors.payment_terms }}</p>
           </Field>
 
           <Field>
             <div class="flex items-center gap-3">
               <Switch
                 v-model="delivered"
-                :disabled="submitting"
+                :disabled="isSubmitting"
               />
               <FieldLabel class="mb-0">Delivered</FieldLabel>
             </div>
           </Field>
 
-          <Field>
+          <Field :data-invalid="!!errors.addressId">
             <FieldLabel>Address</FieldLabel>
-            <Select v-model="addressId" :disabled="submitting">
+            <Select v-model="addressId" :disabled="isSubmitting">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select address" />
               </SelectTrigger>
@@ -228,11 +238,12 @@ async function handleSubmit() {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p v-if="errors.addressId" class="text-sm text-destructive">{{ errors.addressId }}</p>
           </Field>
 
-          <Field>
+          <Field :data-invalid="!!errors.transactionDocumentId">
             <FieldLabel>Transaction Document</FieldLabel>
-            <Select v-model="transactionDocumentId" :disabled="submitting">
+            <Select v-model="transactionDocumentId" :disabled="isSubmitting">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select document type" />
               </SelectTrigger>
@@ -246,11 +257,12 @@ async function handleSubmit() {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p v-if="errors.transactionDocumentId" class="text-sm text-destructive">{{ errors.transactionDocumentId }}</p>
           </Field>
 
-          <Field>
+          <Field :data-invalid="!!errors.deliveryRequirementId">
             <FieldLabel>Delivery Requirement</FieldLabel>
-            <Select v-model="deliveryRequirementId" :disabled="submitting">
+            <Select v-model="deliveryRequirementId" :disabled="isSubmitting">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select requirement" />
               </SelectTrigger>
@@ -264,15 +276,16 @@ async function handleSubmit() {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p v-if="errors.deliveryRequirementId" class="text-sm text-destructive">{{ errors.deliveryRequirementId }}</p>
           </Field>
         </FieldGroup>
 
-        <div v-if="error" class="text-sm text-destructive">{{ error }}</div>
+        <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
 
         <SheetFooter>
           <Button type="button" variant="outline" @click="emit('close')">Cancel</Button>
-          <Button type="submit" :disabled="submitting || !productId || !addressId || !transactionDocumentId || !deliveryRequirementId">
-            {{ submitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Delivery') }}
+          <Button type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Delivery') }}
           </Button>
         </SheetFooter>
       </form>

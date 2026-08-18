@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useAddresses } from '@/composables/useAddresses'
+import { useFormValidation } from '@/composables/useFormValidation'
 import { addressSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -19,43 +19,27 @@ const emit = defineEmits<{
 }>()
 
 const { create, update } = useAddresses()
-
-const name = ref(props.address?.name ?? '')
-const addressText = ref(props.address?.address ?? '')
-const submitting = ref(false)
-const fieldErrors = ref<Record<string, string>>({})
-const serverError = ref('')
-
 const isEditing = !!props.address
 
-async function handleSubmit() {
-  const result = addressSchema.safeParse({ name: name.value, address: addressText.value })
-  if (!result.success) {
-    fieldErrors.value = Object.fromEntries(
-      result.error.issues.map(i => [i.path[0] as string, i.message])
-    )
-    return
+const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
+  addressSchema,
+  { name: props.address?.name ?? '', address: props.address?.address ?? '' },
+)
+
+const [name, nameAttrs] = defineField('name')
+const [addressText, addressAttrs] = defineField('address')
+
+const onSubmit = handleServerSubmit(async (values) => {
+  if (isEditing && props.address) {
+    await update(props.address.id, values.name, values.address)
+    toast.success('Address updated')
+  } else {
+    await create(props.clientId, values.name, values.address)
+    toast.success('Address added')
   }
-  fieldErrors.value = {}
-  submitting.value = true
-  serverError.value = ''
-  try {
-    if (isEditing && props.address) {
-      await update(props.address.id, result.data.name, result.data.address)
-      toast.success('Address updated')
-    } else {
-      await create(props.clientId, result.data.name, result.data.address)
-      toast.success('Address added')
-    }
-    emit('saved')
-    emit('close')
-  } catch (e: any) {
-    toast.error(e.message)
-    serverError.value = e.message
-  } finally {
-    submitting.value = false
-  }
-}
+  emit('saved')
+  emit('close')
+})
 </script>
 
 <template>
@@ -68,17 +52,17 @@ async function handleSubmit() {
         </SheetDescription>
       </SheetHeader>
 
-      <form @submit.prevent="handleSubmit" class="flex flex-col gap-4 px-6">
+      <form @submit.prevent="onSubmit" class="flex flex-col gap-4 px-6">
         <FieldGroup>
-          <Field :data-invalid="!!fieldErrors.name">
+          <Field :data-invalid="!!errors.name">
             <FieldLabel for="addr-name">Label</FieldLabel>
-            <Input id="addr-name" v-model="name" placeholder="e.g. Main Warehouse" required :disabled="submitting" aria-invalid="true" />
-            <p v-if="fieldErrors.name" class="text-sm text-destructive">{{ fieldErrors.name }}</p>
+            <Input id="addr-name" v-model="name" v-bind="nameAttrs" placeholder="e.g. Main Warehouse" required :disabled="isSubmitting" :aria-invalid="!!errors.name" />
+            <p v-if="errors.name" class="text-sm text-destructive">{{ errors.name }}</p>
           </Field>
-          <Field :data-invalid="!!fieldErrors.address">
+          <Field :data-invalid="!!errors.address">
             <FieldLabel for="addr-address">Address</FieldLabel>
-            <Input id="addr-address" v-model="addressText" placeholder="Full address" required :disabled="submitting" aria-invalid="true" />
-            <p v-if="fieldErrors.address" class="text-sm text-destructive">{{ fieldErrors.address }}</p>
+            <Input id="addr-address" v-model="addressText" v-bind="addressAttrs" placeholder="Full address" required :disabled="isSubmitting" :aria-invalid="!!errors.address" />
+            <p v-if="errors.address" class="text-sm text-destructive">{{ errors.address }}</p>
           </Field>
         </FieldGroup>
 
@@ -86,8 +70,8 @@ async function handleSubmit() {
 
         <SheetFooter>
           <Button type="button" variant="outline" @click="emit('close')">Cancel</Button>
-          <Button type="submit" :disabled="submitting">
-            {{ submitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Address') }}
+          <Button type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Add Address') }}
           </Button>
         </SheetFooter>
       </form>

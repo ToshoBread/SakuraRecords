@@ -151,6 +151,16 @@ async function handleSubmit() {
           .eq('poid', poNumber)
           .eq('productid', product.productid)
         if (qtyError) throw qtyError
+
+        if (product.hasDeliveries) {
+          const { error: deliveryPriceError } = await supabase
+            .from('delivery')
+            .update({ unit_price: product.price_per_kg })
+            .eq('poid', poNumber)
+            .eq('productid', product.productid)
+            .is('deleted_at', null)
+          if (deliveryPriceError) throw deliveryPriceError
+        }
       }
     }
 
@@ -259,7 +269,7 @@ async function handleSubmit() {
                         min="0"
                         step="0.01"
                         class="h-9"
-                        :disabled="submitting || item.hasDeliveries"
+                        :disabled="submitting"
                       />
                     </TableCell>
                     <TableCell>
@@ -279,7 +289,7 @@ async function handleSubmit() {
               </Table>
 
               <p v-if="localProducts.some(p => p.hasDeliveries)" class="text-xs text-muted-foreground">
-                Products with existing deliveries cannot be removed or have their quantity changed.
+                Products with existing deliveries cannot be removed or have their quantity changed. Price changes will update existing deliveries.
               </p>
             </div>
 

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
+import { useFormValidation } from '@/composables/useFormValidation'
 import { clientSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -15,10 +16,13 @@ const router = useRouter()
 const { clients, loading, fetchAll, update } = useClients()
 
 const clientId = Number(route.params.id)
-const name = ref('')
-const submitting = ref(false)
-const fieldErrors = ref<Record<string, string>>({})
-const serverError = ref('')
+
+const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
+  clientSchema,
+  { name: '' },
+)
+
+const [name, nameAttrs] = defineField('name')
 
 onMounted(async () => {
   await fetchAll()
@@ -26,28 +30,11 @@ onMounted(async () => {
   if (found) name.value = found.name
 })
 
-async function handleSubmit() {
-  const result = clientSchema.safeParse({ name: name.value })
-  if (!result.success) {
-    fieldErrors.value = Object.fromEntries(
-      result.error.issues.map(i => [i.path[0] as string, i.message])
-    )
-    return
-  }
-  fieldErrors.value = {}
-  submitting.value = true
-  serverError.value = ''
-  try {
-    await update(clientId, result.data.name)
-    toast.success('Client updated')
-    router.push({ name: 'client-detail', params: { id: clientId } })
-  } catch (e: any) {
-    toast.error(e.message)
-    serverError.value = e.message
-  } finally {
-    submitting.value = false
-  }
-}
+const onSubmit = handleServerSubmit(async (values) => {
+  await update(clientId, values.name)
+  toast.success('Client updated')
+  router.push({ name: 'client-detail', params: { id: clientId } })
+})
 </script>
 
 <template>
@@ -62,18 +49,18 @@ async function handleSubmit() {
         <CardTitle>Edit Client</CardTitle>
       </CardHeader>
       <CardContent>
-        <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
+        <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
           <FieldGroup>
-            <Field :data-invalid="!!fieldErrors.name">
+            <Field :data-invalid="!!errors.name">
               <FieldLabel for="name">Name</FieldLabel>
-              <Input id="name" v-model="name" required :disabled="submitting" aria-invalid="true" />
-              <p v-if="fieldErrors.name" class="text-sm text-destructive">{{ fieldErrors.name }}</p>
+              <Input id="name" v-model="name" v-bind="nameAttrs" required :disabled="isSubmitting" :aria-invalid="!!errors.name" />
+              <p v-if="errors.name" class="text-sm text-destructive">{{ errors.name }}</p>
             </Field>
           </FieldGroup>
           <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
           <div class="flex gap-2">
-            <Button type="submit" :disabled="submitting">
-              {{ submitting ? 'Saving...' : 'Save Changes' }}
+            <Button type="submit" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
             </Button>
             <Button variant="outline" type="button" @click="router.back()">Cancel</Button>
           </div>

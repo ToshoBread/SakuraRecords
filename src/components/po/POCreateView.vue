@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
 import { useClients } from '@/composables/useClients'
 import { useProducts } from '@/composables/useProducts'
+import { useFormValidation } from '@/composables/useFormValidation'
 import { purchaseOrderSchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -21,16 +22,19 @@ const { createPurchaseOrder, checkPurchaseOrderNumberUnique } = usePurchaseOrder
 const { clients, fetchAll: fetchClients } = useClients()
 const { products, fetchAll: fetchProducts } = useProducts()
 
-const purchaseOrderNumber = ref('')
-const clientId = ref<string>('')
-const notes = ref('')
 const selectedProducts = ref<{ productId: number; name: string; code: string; ordered_quantity: number; price_per_kg: number }[]>([])
 const showProductSheet = ref(false)
 const productSearch = ref('')
-const submitting = ref(false)
-const fieldErrors = ref<Record<string, string>>({})
-const serverError = ref('')
 const purchaseOrderNumberError = ref('')
+
+const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
+  purchaseOrderSchema,
+  { purchaseOrderNumber: '', clientId: '', notes: '', products: [] },
+)
+
+const [purchaseOrderNumber, purchaseOrderNumberAttrs] = defineField('purchaseOrderNumber')
+const [clientId] = defineField('clientId')
+const [notes, notesAttrs] = defineField('notes')
 
 onMounted(async () => {
   await Promise.all([fetchClients(), fetchProducts()])
@@ -69,56 +73,33 @@ function updatePricePerKg(productId: number, price: number) {
   if (item) item.price_per_kg = Math.max(0, price)
 }
 
-const filteredProducts = () => {
+const filteredProducts = computed(() => {
   if (!productSearch.value) return products.value
   const q = productSearch.value.toLowerCase()
   return products.value.filter(p =>
     p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q)
   )
-}
+})
 
-const canSubmit = () => {
-  return !submitting.value
+const canSubmit = computed(() => {
+  return !isSubmitting.value
     && !purchaseOrderNumberError.value
-}
+})
 
-async function handleSubmit() {
-  const result = purchaseOrderSchema.safeParse({
-    purchaseOrderNumber: purchaseOrderNumber.value.trim(),
-    clientId: clientId.value,
-    notes: notes.value || undefined,
-    products: selectedProducts.value,
-  })
-  if (!result.success) {
-    fieldErrors.value = Object.fromEntries(
-      result.error.issues.map(i => [i.path[0] as string, i.message])
-    )
-    return
-  }
-  if (purchaseOrderNumberError.value) return
-  fieldErrors.value = {}
-  submitting.value = true
-  serverError.value = ''
-  try {
-    await createPurchaseOrder(
-      result.data.purchaseOrderNumber,
-      Number(result.data.clientId),
-      result.data.notes ?? null,
-      result.data.products.map(p => ({
-        productId: p.productId,
-        ordered_quantity: p.ordered_quantity,
-        price_per_kg: p.price_per_kg,
-      }))
-    )
-    toast.success('Purchase order created')
-    router.push({ name: 'purchase-order-detail', params: { purchaseOrderNumber: result.data.purchaseOrderNumber } })
-  } catch (e: any) {
-    toast.error(e.message)
-    serverError.value = e.message
-  } finally {
-    submitting.value = false
-  }
-}
+const onSubmit = handleServerSubmit(async (values) => {
+  await createPurchaseOrder(
+    values.purchaseOrderNumber,
+    Number(values.clientId),
+    values.notes || null,
+    selectedProducts.value.map(p => ({
+      productId: p.productId,
+      ordered_quantity: p.ordered_quantity,
+      price_per_kg: p.price_per_kg,
+    })),
+  )
+  toast.success('Purchase order created')
+  router.push({ name: 'purchase-order-detail', params: { purchaseOrderNumber: values.purchaseOrderNumber } })
+})
 </script>
 
 <template>
@@ -128,26 +109,27 @@ async function handleSubmit() {
         <CardTitle>New Purchase Order</CardTitle>
       </CardHeader>
       <CardContent>
-        <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
+        <form @submit.prevent="onSubmit" class="flex flex-col gap-6">
           <FieldGroup>
-            <Field :data-invalid="!!fieldErrors.purchaseOrderNumber || !!purchaseOrderNumberError">
+            <Field :data-invalid="!!errors.purchaseOrderNumber || !!purchaseOrderNumberError">
               <FieldLabel for="purchaseOrderNumber">Purchase Order Number</FieldLabel>
               <Input
                 id="purchaseOrderNumber"
                 v-model="purchaseOrderNumber"
+                v-bind="purchaseOrderNumberAttrs"
                 required
-                :disabled="submitting"
+                :disabled="isSubmitting"
                 placeholder="e.g. PO-2026-001"
                 @blur="handlePurchaseOrderNumberBlur"
-                aria-invalid="true"
+                :aria-invalid="!!errors.purchaseOrderNumber || !!purchaseOrderNumberError"
               />
-              <p v-if="fieldErrors.purchaseOrderNumber" class="text-sm text-destructive">{{ fieldErrors.purchaseOrderNumber }}</p>
+              <p v-if="errors.purchaseOrderNumber" class="text-sm text-destructive">{{ errors.purchaseOrderNumber }}</p>
               <p v-else-if="purchaseOrderNumberError" class="text-sm text-destructive">{{ purchaseOrderNumberError }}</p>
             </Field>
 
-            <Field :data-invalid="!!fieldErrors.clientId">
+            <Field :data-invalid="!!errors.clientId">
               <FieldLabel>Client</FieldLabel>
-              <Select v-model="clientId" :disabled="submitting">
+              <Select v-model="clientId" :disabled="isSubmitting">
                 <SelectTrigger class="w-full">
                   <SelectValue placeholder="Select a client" />
                 </SelectTrigger>
@@ -161,7 +143,7 @@ async function handleSubmit() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p v-if="fieldErrors.clientId" class="text-sm text-destructive">{{ fieldErrors.clientId }}</p>
+              <p v-if="errors.clientId" class="text-sm text-destructive">{{ errors.clientId }}</p>
             </Field>
 
             <Field>
@@ -169,7 +151,8 @@ async function handleSubmit() {
               <Textarea
                 id="notes"
                 v-model="notes"
-                :disabled="submitting"
+                v-bind="notesAttrs"
+                :disabled="isSubmitting"
                 placeholder="Optional notes"
               />
             </Field>
@@ -183,15 +166,15 @@ async function handleSubmit() {
                 variant="outline"
                 size="sm"
                 @click="showProductSheet = true"
-                :disabled="submitting"
+                :disabled="isSubmitting"
               >
                 <Plus class="w-4 h-4 mr-1" />
                 Add Product
               </Button>
             </div>
 
-            <div v-if="selectedProducts.length === 0 && fieldErrors.products" class="text-sm text-destructive py-4 text-center border rounded-md">
-              {{ fieldErrors.products }}
+            <div v-if="selectedProducts.length === 0 && errors.products" class="text-sm text-destructive py-4 text-center border rounded-md">
+              {{ errors.products }}
             </div>
             <div v-else-if="selectedProducts.length === 0" class="text-sm text-muted-foreground py-4 text-center border rounded-md">
               No products added yet
@@ -218,7 +201,7 @@ async function handleSubmit() {
                       @update:model-value="updateQuantity(item.productId, Number($event))"
                       min="1"
                       class="h-9"
-                      :disabled="submitting"
+                      :disabled="isSubmitting"
                     />
                   </TableCell>
                   <TableCell>
@@ -229,7 +212,7 @@ async function handleSubmit() {
                       min="0"
                       step="0.01"
                       class="h-9"
-                      :disabled="submitting"
+                      :disabled="isSubmitting"
                     />
                   </TableCell>
                   <TableCell>
@@ -238,7 +221,7 @@ async function handleSubmit() {
                       variant="ghost"
                       size="sm"
                       @click="removeProduct(item.productId)"
-                      :disabled="submitting"
+                      :disabled="isSubmitting"
                     >
                       <Trash2 class="w-4 h-4 text-destructive" />
                     </Button>
@@ -251,8 +234,8 @@ async function handleSubmit() {
           <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
 
           <div class="flex gap-2">
-            <Button type="submit" :disabled="!canSubmit()">
-              {{ submitting ? 'Creating...' : 'Create Purchase Order' }}
+            <Button type="submit" :disabled="!canSubmit">
+              {{ isSubmitting ? 'Creating...' : 'Create Purchase Order' }}
             </Button>
             <Button variant="outline" type="button" @click="router.back()">Cancel</Button>
           </div>
@@ -273,7 +256,7 @@ async function handleSubmit() {
           />
           <div class="flex flex-col gap-1 max-h-[60vh] overflow-y-auto">
             <button
-              v-for="product in filteredProducts()"
+              v-for="product in filteredProducts"
               :key="product.id"
               type="button"
               class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground text-left"
@@ -283,7 +266,7 @@ async function handleSubmit() {
               <span class="font-medium">{{ product.name }}</span>
               <span class="text-muted-foreground">{{ product.code }}</span>
             </button>
-            <p v-if="filteredProducts().length === 0" class="text-sm text-muted-foreground text-center py-4">
+            <p v-if="filteredProducts.length === 0" class="text-sm text-muted-foreground text-center py-4">
               No products found
             </p>
           </div>

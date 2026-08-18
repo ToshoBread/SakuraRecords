@@ -29,18 +29,6 @@ export const purchaseOrderSchema = z.object({
   })).min(1, 'At least one product is required'),
 })
 
-export const deliverySchema = z.object({
-  productId: z.string().min(1, 'Product is required'),
-  shipped_quantity: z.number().min(1, 'Quantity must be at least 1'),
-  unit_price: z.number().min(0, 'Price must be non-negative'),
-  delivery_date: z.string().min(1, 'Date is required'),
-  payment_terms: z.number().min(0),
-  delivered: z.boolean(),
-  addressId: z.string().min(1, 'Address is required'),
-  transactionDocumentId: z.string().min(1, 'Document type is required'),
-  deliveryRequirementId: z.string().min(1, 'Requirement is required'),
-})
-
 export const purchaseOrderEditSchema = z.object({
   notes: z.string().max(1000).optional().or(z.literal('')),
   products: z.array(z.object({
@@ -52,8 +40,31 @@ export const purchaseOrderEditSchema = z.object({
   })).min(1, 'At least one product is required'),
 })
 
+export const loginSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+})
+
+export const deliverySchema = z.object({
+  productId: z.string().min(1, 'Product is required'),
+  shipped_quantity: z.number().min(1, 'Quantity must be at least 1'),
+  delivery_date: z.string().min(1, 'Delivery date is required'),
+  payment_terms: z.number().min(0, 'Payment terms must be non-negative'),
+  delivered: z.boolean(),
+  addressId: z.string().min(1, 'Address is required'),
+  transactionDocumentId: z.string().min(1, 'Transaction document is required'),
+  deliveryRequirementId: z.string().min(1, 'Delivery requirement is required'),
+})
+
+export const adminPasswordResetSchema = z.object({
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+})
+
 export type ClientInput = z.infer<typeof clientSchema>
 export type ProductInput = z.infer<typeof productSchema>
 export type AddressInput = z.infer<typeof addressSchema>
 export type PurchaseOrderInput = z.infer<typeof purchaseOrderSchema>
+export type PurchaseOrderEditInput = z.infer<typeof purchaseOrderEditSchema>
+export type LoginInput = z.infer<typeof loginSchema>
 export type DeliveryInput = z.infer<typeof deliverySchema>
+export type AdminPasswordResetInput = z.infer<typeof adminPasswordResetSchema>

@@ -1,32 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { useFormValidation } from '@/composables/useFormValidation'
+import { loginSchema } from '@/lib/schemas'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 
 const router = useRouter()
 const { login } = useAuth()
 
-const email = ref('')
-const password = ref('')
-const error = ref('')
-const submitting = ref(false)
+const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
+  loginSchema,
+  { email: '', password: '' },
+)
 
-async function handleSubmit() {
-  error.value = ''
-  submitting.value = true
-  try {
-    await login(email.value, password.value)
-    router.push({ name: 'dashboard' })
-  } catch (e: any) {
-    error.value = e.message || 'Invalid credentials'
-  } finally {
-    submitting.value = false
-  }
-}
+const [email, emailAttrs] = defineField('email')
+const [password, passwordAttrs] = defineField('password')
+
+const onSubmit = handleServerSubmit(async (values) => {
+  await login(values.email, values.password)
+  router.push({ name: 'dashboard' })
+})
 </script>
 
 <template>
@@ -37,32 +33,40 @@ async function handleSubmit() {
         <CardDescription>Sign in to your account</CardDescription>
       </CardHeader>
       <CardContent>
-        <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
-          <div class="flex flex-col gap-2">
-            <Label for="email">Email</Label>
-            <Input
-              id="email"
-              v-model="email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              :disabled="submitting"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <Label for="password">Password</Label>
-            <Input
-              id="password"
-              v-model="password"
-              type="password"
-              placeholder="••••••••"
-              required
-              :disabled="submitting"
-            />
-          </div>
-          <div v-if="error" class="text-sm text-destructive">{{ error }}</div>
-          <Button type="submit" :disabled="submitting" class="w-full">
-            {{ submitting ? 'Signing in...' : 'Sign In' }}
+        <form @submit.prevent="onSubmit" class="flex flex-col gap-4">
+          <FieldGroup>
+            <Field :data-invalid="!!errors.email">
+              <FieldLabel for="email">Email</FieldLabel>
+              <Input
+                id="email"
+                v-model="email"
+                v-bind="emailAttrs"
+                type="email"
+                placeholder="you@example.com"
+                required
+                :disabled="isSubmitting"
+                :aria-invalid="!!errors.email"
+              />
+              <p v-if="errors.email" class="text-sm text-destructive">{{ errors.email }}</p>
+            </Field>
+            <Field :data-invalid="!!errors.password">
+              <FieldLabel for="password">Password</FieldLabel>
+              <Input
+                id="password"
+                v-model="password"
+                v-bind="passwordAttrs"
+                type="password"
+                placeholder="••••••••"
+                required
+                :disabled="isSubmitting"
+                :aria-invalid="!!errors.password"
+              />
+              <p v-if="errors.password" class="text-sm text-destructive">{{ errors.password }}</p>
+            </Field>
+          </FieldGroup>
+          <div v-if="serverError" class="text-sm text-destructive">{{ serverError }}</div>
+          <Button type="submit" :disabled="isSubmitting" class="w-full">
+            {{ isSubmitting ? 'Signing in...' : 'Sign In' }}
           </Button>
         </form>
       </CardContent>
