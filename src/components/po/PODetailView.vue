@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePurchaseOrder, type Delivery } from '@/composables/usePurchaseOrder'
 import { formatDate } from '@/lib/format'
@@ -44,6 +44,10 @@ function onDeliveryFormClose() {
 function onDeliverySaved() {
   fetchByPurchaseOrderNumber(poNumber)
 }
+
+const activeDeliveries = computed(() =>
+  purchaseOrder.value?.deliveries.filter(d => !d.deleted_at) ?? []
+)
 
 async function handleDeleteDelivery(id: number) {
   if (!confirm('Delete this delivery?')) return
@@ -118,7 +122,7 @@ async function handleDeleteDelivery(id: number) {
       </div>
 
       <DeliveryTable
-        :deliveries="purchaseOrder.deliveries"
+        :deliveries="activeDeliveries"
         :format-currency="formatCurrency"
         @edit="openEditDelivery"
         @delete="handleDeleteDelivery"

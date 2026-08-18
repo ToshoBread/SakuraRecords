@@ -26,13 +26,12 @@ const isEditing = computed(() => !!props.delivery)
 
 const productId = ref<string>(props.delivery ? String(props.delivery.productid) : '')
 const shipped_quantity = ref(props.delivery?.shipped_quantity ?? 1)
-const unit_price = ref(props.delivery?.unit_price ?? 0)
 const delivery_date = ref(props.delivery?.delivery_date ?? new Date().toISOString().slice(0, 10))
 const payment_terms = ref(props.delivery?.payment_terms ?? 30)
 const delivered = ref(props.delivery?.delivered ?? false)
 const addressId = ref<string>(props.delivery ? String(props.delivery.addressid) : '')
-const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactiondocumentid) : '')
-const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryrequirementid) : '')
+const transactionDocumentId = ref<string>(props.delivery ? String(props.delivery.transactiondocumentid) : '1')
+const deliveryRequirementId = ref<string>(props.delivery ? String(props.delivery.deliveryrequirementid) : '1')
 
 const addresses = ref<{ id: number; name: string }[]>([])
 const transactionDocuments = ref<{ id: number; document: string }[]>([])
@@ -50,7 +49,14 @@ const selectedProductRemaining = computed(() => {
   return pp.remaining
 })
 
+const selectedProductPricePerKg = computed(() => {
+  const pp = props.products.find(p => p.productid === Number(productId.value))
+  return pp?.price_per_kg ?? 0
+})
+
 const maxQuantity = computed(() => selectedProductRemaining.value ?? 0)
+
+const totalPrice = computed(() => Number(shipped_quantity.value) * selectedProductPricePerKg.value)
 
 onMounted(async () => {
   const [addrRes, tdRes, drRes] = await Promise.all([
@@ -80,7 +86,7 @@ async function handleSubmit() {
     poid: props.poId,
     productid: Number(productId.value),
     shipped_quantity: Number(shipped_quantity.value),
-    unit_price: Number(unit_price.value),
+    unit_price: selectedProductPricePerKg.value,
     delivery_date: delivery_date.value,
     payment_terms: Number(payment_terms.value),
     delivered: delivered.value,
@@ -147,7 +153,7 @@ async function handleSubmit() {
           </Field>
 
           <Field>
-            <FieldLabel for="qty">Shipped Quantity</FieldLabel>
+            <FieldLabel for="qty">Shipped Quantity (kg)</FieldLabel>
             <Input
               id="qty"
               type="number"
@@ -158,22 +164,20 @@ async function handleSubmit() {
               :disabled="submitting"
             />
             <p v-if="maxQuantity !== null" class="text-xs text-muted-foreground">
-              Max: {{ maxQuantity }}
+              Max: {{ maxQuantity }} kg
             </p>
           </Field>
 
-          <Field>
-            <FieldLabel for="price">Unit Price (₱)</FieldLabel>
-            <Input
-              id="price"
-              type="number"
-              v-model="unit_price"
-              min="0"
-              step="0.01"
-              required
-              :disabled="submitting"
-            />
-          </Field>
+          <div class="rounded-md border px-4 py-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">Price/kg</span>
+              <span>₱{{ selectedProductPricePerKg.toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between font-medium mt-1">
+              <span>Total</span>
+              <span>₱{{ totalPrice.toLocaleString('en-PH', { minimumFractionDigits: 2 }) }}</span>
+            </div>
+          </div>
 
           <Field>
             <FieldLabel for="date">Delivery Date</FieldLabel>
@@ -201,8 +205,7 @@ async function handleSubmit() {
           <Field>
             <div class="flex items-center gap-3">
               <Switch
-                :checked="delivered"
-                @update:checked="delivered = $event"
+                v-model="delivered"
                 :disabled="submitting"
               />
               <FieldLabel class="mb-0">Delivered</FieldLabel>
