@@ -1,12 +1,12 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { formatCurrency } from '@/lib/format'
 
 export interface PurchaseOrderDetail {
   id: string
   clientid: number
   notes: string | null
   created_at: string
+  updated_at: string
   client: { id: number; name: string }
   po_products: PurchaseOrderProduct[]
   deliveries: Delivery[]
@@ -17,7 +17,7 @@ export interface PurchaseOrderProduct {
   productid: number
   ordered_quantity: number
   price_per_kg: number
-  product: { id: number; name: string; code: string }
+  product: { id: number; name: string; code: string; updated_at: string }
 }
 
 export interface Delivery {
@@ -44,7 +44,7 @@ export interface ProductWithRemaining {
   productid: number
   ordered_quantity: number
   price_per_kg: number
-  product: { id: number; name: string; code: string }
+  product: { id: number; name: string; code: string; updated_at: string }
   shipped: number
   remaining: number
 }
@@ -155,6 +155,5 @@ export function usePurchaseOrder() {
     addDelivery,
     updateDelivery,
     deleteDelivery,
-    formatCurrency,
   }
 }
