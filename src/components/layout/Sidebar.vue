@@ -8,6 +8,7 @@ import {
   FileText,
   Users,
   Package,
+  BarChart3,
   Plus,
   Shield,
   X,
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'purchase-order-list', label: 'Purchase Orders', icon: FileText },
   { name: 'client-list', label: 'Clients', icon: Users },
   { name: 'product-list', label: 'Products', icon: Package },
+  { name: 'reports', label: 'Reports', icon: BarChart3 },
 ]
 
 const adminItems = [

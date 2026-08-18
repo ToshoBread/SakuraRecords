@@ -28,3 +28,5 @@ dist-ssr
 .opencode/
 .agents/
 context/
+docs/plans/
+docs/specs/

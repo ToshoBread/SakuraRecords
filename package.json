@@ -12,6 +12,8 @@
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@lucide/vue": "^1.31.0",
     "@supabase/supabase-js": "^2.112.3",
+    "@unovis/ts": "^1.6.7",
+    "@unovis/vue": "^1.6.7",
     "@vee-validate/zod": "^4.15.1",
     "@vueuse/core": "^14.4.0",
     "class-variance-authority": "^0.7.1",
