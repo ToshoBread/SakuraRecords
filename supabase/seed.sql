@@ -3,13 +3,13 @@
 -- Lookup tables
 INSERT INTO transaction_document (document) VALUES
   ('DR & SI'),
-  ('Delivery Receipt'),
-  ('Sales Invoice');
+  ('DR'),
+  ('SI');
 
 INSERT INTO delivery_requirement (requirement) VALUES
   ('COA & PO'),
-  ('Certificate of Analysis'),
-  ('Purchase Order');
+  ('COA'),
+  ('PO');
 
 -- Clients
 INSERT INTO client (id, name) OVERRIDING SYSTEM VALUE VALUES

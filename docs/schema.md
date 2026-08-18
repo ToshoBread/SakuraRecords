@@ -84,7 +84,7 @@
 | updated_at | TIMESTAMP | NOT NULL |
 | deleted_at | TIMESTAMP | NULL (soft delete) |
 
-Lookup values: "DR & SI", "Delivery Receipt", "Sales Invoice", etc.
+Lookup values: "DR & SI", "DR", "SI", etc. ("Both" options listed first.)
 
 ### delivery_requirement
 | Column | Type | Constraints |
@@ -95,7 +95,7 @@ Lookup values: "DR & SI", "Delivery Receipt", "Sales Invoice", etc.
 | updated_at | TIMESTAMP | NOT NULL |
 | deleted_at | TIMESTAMP | NULL (soft delete) |
 
-Lookup values: "COA & PO", "Certificate of Analysis", "Purchase Order", etc.
+Lookup values: "COA & PO", "COA", "PO", etc. ("Both" options listed first.)
 
 ## Relationships
 
