@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useFormValidation } from '@/composables/useFormValidation'
@@ -7,9 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Eye, EyeOff } from '@lucide/vue'
 
 const router = useRouter()
 const { login } = useAuth()
+const showPassword = ref(false)
 
 const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
   loginSchema,
@@ -51,16 +54,29 @@ const onSubmit = handleServerSubmit(async (values) => {
             </Field>
             <Field :data-invalid="!!errors.password">
               <FieldLabel for="password">Password</FieldLabel>
-              <Input
-                id="password"
-                v-model="password"
-                v-bind="passwordAttrs"
-                type="password"
-                placeholder="••••••••"
-                required
-                :disabled="isSubmitting"
-                :aria-invalid="!!errors.password"
-              />
+              <div class="relative">
+                <Input
+                  id="password"
+                  v-model="password"
+                  v-bind="passwordAttrs"
+                  :type="showPassword ? 'text' : 'password'"
+                  required
+                  :disabled="isSubmitting"
+                  :aria-invalid="!!errors.password"
+                  class="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  class="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  @click="showPassword = !showPassword"
+                >
+                  <EyeOff v-if="showPassword" class="size-4" />
+                  <Eye v-else class="size-4" />
+                </Button>
+              </div>
               <p v-if="errors.password" class="text-sm text-destructive">{{ errors.password }}</p>
             </Field>
           </FieldGroup>
