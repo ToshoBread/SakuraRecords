@@ -7,20 +7,20 @@
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
 | name | VARCHAR(255) | NOT NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 ### address
 | Column | Type | Constraints |
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
-| clientId | INTEGER | FK→client, NOT NULL |
+| clientid | INTEGER | FK→client, NOT NULL |
 | name | VARCHAR(255) | NOT NULL (label) |
 | address | VARCHAR(255) | NOT NULL (freeform) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 ### product
 | Column | Type | Constraints |
@@ -30,48 +30,48 @@
 | code | VARCHAR(255) | UNIQUE, NOT NULL (editable reference) |
 | description | TEXT | NULL (optional) |
 | kg | NUMERIC | NOT NULL, DEFAULT 0 (informational) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 ### purchase_order
 | Column | Type | Constraints |
 |--------|------|-------------|
 | id | VARCHAR(255) | PK (user-supplied PO number) |
-| clientId | INTEGER | FK→client, NOT NULL |
+| clientid | INTEGER | FK→client, NOT NULL |
 | notes | TEXT | NULL (optional) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 ### po_product (pivot)
 | Column | Type | Constraints |
 |--------|------|-------------|
-| poId | VARCHAR(255) | FK→purchase_order, PK |
-| productId | INTEGER | FK→product, PK |
+| poid | VARCHAR(255) | FK→purchase_order, PK |
+| productid | INTEGER | FK→product, PK |
 | ordered_quantity | NUMERIC | NOT NULL, CHECK >= 0 |
 | price_per_kg | NUMERIC | NOT NULL, DEFAULT 0 (₱/kg for this order) |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 ### delivery
 | Column | Type | Constraints |
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
-| poId | VARCHAR(255) | FK→purchase_order, NOT NULL |
-| productId | INTEGER | FK→product, NOT NULL |
+| poid | VARCHAR(255) | FK→purchase_order, NOT NULL |
+| productid | INTEGER | FK→product, NOT NULL |
 | shipped_quantity | NUMERIC | NOT NULL, CHECK >= 0 |
 | unit_price | NUMERIC | NOT NULL, CHECK >= 0 |
 | delivery_date | DATE | NOT NULL |
 | payment_terms | INTEGER | NOT NULL, DEFAULT 30 |
 | delivered | BOOLEAN | NOT NULL, DEFAULT false |
-| addressId | INTEGER | FK→address, NOT NULL |
-| transactionDocumentId | INTEGER | FK→transaction_document, NOT NULL |
-| deliveryRequirementId | INTEGER | FK→delivery_requirement, NOT NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| addressid | INTEGER | FK→address, NOT NULL |
+| transactiondocumentid | INTEGER | FK→transaction_document, NOT NULL |
+| deliveryrequirementid | INTEGER | FK→delivery_requirement, NOT NULL |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 **Business rule:** The total `shipped_quantity` across all **delivered** deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Only deliveries with `delivered = true` count toward the shipped total. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
 
@@ -80,9 +80,9 @@
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
 | document | VARCHAR(255) | NOT NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 Lookup values: "DR & SI", "DR", "SI", etc. ("Both" options listed first.)
 
@@ -91,9 +91,9 @@ Lookup values: "DR & SI", "DR", "SI", etc. ("Both" options listed first.)
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
 | requirement | VARCHAR(255) | NOT NULL |
-| created_at | TIMESTAMP | NOT NULL |
-| updated_at | TIMESTAMP | NOT NULL |
-| deleted_at | TIMESTAMP | NULL (soft delete) |
+| created_at | TIMESTAMPTZ | NOT NULL |
+| updated_at | TIMESTAMPTZ | NOT NULL |
+| deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 Lookup values: "COA & PO", "COA", "PO", etc. ("Both" options listed first.)
 
