@@ -76,7 +76,7 @@ export function usePurchaseOrders() {
           .eq('poid', po.id)
           .is('deleted_at', null)
 
-        if (count === 0) openPurchaseOrders++
+        if (count && count > 0) openPurchaseOrders++
       }
     }
 
