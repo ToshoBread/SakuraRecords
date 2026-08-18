@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, watch } from 'vue'
 import { useTheme } from '@/composables/useTheme'
+import { useSearch, type SearchResults } from '@/composables/useSearch'
+import { useMagicKeys, whenever, onClickOutside } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import SearchDropdown from './SearchDropdown.vue'
 import UserMenu from './UserMenu.vue'
 import { Menu, Search, Sun, Moon, Monitor } from '@lucide/vue'
 
@@ -15,25 +17,67 @@ const emit = defineEmits<{
   toggleSidebar: []
 }>()
 
-const router = useRouter()
 const { cycleTheme, themeIcon, themeLabel } = useTheme()
-const searchQuery = ref('')
+const { loadAll, search, loading } = useSearch()
 
-function handleSearch() {
-  const q = searchQuery.value.trim()
-  if (!q) return
-  const lower = q.toLowerCase()
-  if (lower.startsWith('po') || lower.includes('purchase')) {
-    router.push({ name: 'purchase-order-list', query: { q } })
-  } else if (lower.includes('client')) {
-    router.push({ name: 'client-list', query: { q } })
-  } else if (lower.includes('product')) {
-    router.push({ name: 'product-list', query: { q } })
+const searchQuery = ref('')
+const isOpen = ref(false)
+const inputRef = ref<InstanceType<typeof Input> | null>(null)
+const containerRef = ref<HTMLDivElement | null>(null)
+
+const results = ref<SearchResults>({ clients: [], products: [], purchaseOrders: [] })
+
+const hasQuery = computed(() => searchQuery.value.trim().length >= 2)
+
+watch(searchQuery, (q) => {
+  const trimmed = q.trim()
+  if (trimmed.length >= 2) {
+    results.value = search(trimmed)
+    isOpen.value = true
   } else {
-    router.push({ name: 'dashboard' })
+    results.value = { clients: [], products: [], purchaseOrders: [] }
+    isOpen.value = false
   }
-  searchQuery.value = ''
+})
+
+function focusInput() {
+  const el = inputRef.value?.$el as HTMLInputElement | undefined
+  el?.focus()
 }
+
+function handleSelect() {
+  searchQuery.value = ''
+  isOpen.value = false
+  results.value = { clients: [], products: [], purchaseOrders: [] }
+}
+
+function handleFocus() {
+  loadAll()
+  if (hasQuery.value) {
+    isOpen.value = true
+  }
+}
+
+function handleClose() {
+  isOpen.value = false
+}
+
+onClickOutside(containerRef, () => {
+  isOpen.value = false
+})
+
+const { meta_k, control_k } = useMagicKeys({
+  passive: false,
+  onEventFired(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k' && e.type === 'keydown') {
+      e.preventDefault()
+    }
+  },
+})
+
+whenever(() => meta_k.value || control_k.value, () => {
+  focusInput()
+})
 </script>
 
 <template>
@@ -42,17 +86,34 @@ function handleSearch() {
       <Menu class="size-5" />
     </Button>
 
-    <form @submit.prevent="handleSearch" class="flex min-w-0 flex-1 items-center gap-2">
+    <div ref="containerRef" class="relative min-w-0 flex-1">
       <div class="relative min-w-0 flex-1">
         <Search class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref="inputRef"
           v-model="searchQuery"
           placeholder="Search..."
           aria-label="Search"
-          class="h-9 pl-8"
+          class="h-9 pl-8 pr-12"
+          @focus="handleFocus"
+          @keydown.escape="handleClose"
+        />
+        <kbd class="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 select-none items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:inline-flex">
+          Ctrl+K
+        </kbd>
+      </div>
+
+      <div
+        v-if="isOpen && (hasQuery || loading)"
+        class="absolute top-full left-0 z-50 mt-1 w-full min-w-[300px] overflow-hidden rounded-md border bg-popover p-0 text-popover-foreground shadow-md"
+      >
+        <SearchDropdown
+          :results="results"
+          :loading="loading"
+          @select="handleSelect"
         />
       </div>
-    </form>
+    </div>
 
     <div class="ml-auto flex shrink-0 items-center gap-1">
       <Button variant="ghost" size="icon" :aria-label="`Theme: ${themeLabel}`" @click="cycleTheme" :title="themeLabel">
