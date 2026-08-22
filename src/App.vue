@@ -4,6 +4,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useTheme } from '@/composables/useTheme'
 import { useSettings } from '@/composables/useSettings'
 import { Toaster } from "@/components/ui/sonner"
+import UpdatePrompt from '@/components/UpdatePrompt.vue'
 
 const { init, loading } = useAuth()
 const { initTheme } = useTheme()
@@ -22,4 +23,5 @@ onMounted(() => {
   </div>
   <RouterView v-else />
   <Toaster />
+  <UpdatePrompt />
 </template>
