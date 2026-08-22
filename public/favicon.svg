@@ -5,7 +5,7 @@
       <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
   </defs>
-  <g transform="translate(16,14)">
+  <g transform="translate(16,16)">
     <ellipse rx="4.5" ry="8" fill="url(#g)" transform="rotate(0) translate(0,-7)" opacity="0.9"/>
     <ellipse rx="4.5" ry="8" fill="url(#g)" transform="rotate(72) translate(0,-7)" opacity="0.9"/>
     <ellipse rx="4.5" ry="8" fill="url(#g)" transform="rotate(144) translate(0,-7)" opacity="0.9"/>
