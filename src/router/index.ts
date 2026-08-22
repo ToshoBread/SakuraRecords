@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '@/lib/supabase'
-import { useSettings } from '@/composables/useSettings'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -41,6 +40,14 @@ const router = createRouter({
   ],
 })
 
+function readLandingPage() {
+  try {
+    const stored = localStorage.getItem('settings')
+    if (stored) return JSON.parse(stored).landingPage ?? 'dashboard'
+  } catch {}
+  return 'dashboard'
+}
+
 router.beforeEach(async (to) => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
@@ -50,8 +57,7 @@ router.beforeEach(async (to) => {
       return { name: 'login' }
     }
     if (to.name === 'login' && session) {
-      const { settings } = useSettings()
-      return { name: settings.value.landingPage }
+      return { name: readLandingPage() }
     }
   } catch {
     return { name: 'login' }

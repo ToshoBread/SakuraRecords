@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
 import { useFormValidation } from '@/composables/useFormValidation'
@@ -15,7 +15,7 @@ const route = useRoute()
 const router = useRouter()
 const { clients, loading, fetchAll, update } = useClients()
 
-const clientId = Number(route.params.id)
+const clientId = computed(() => Number(route.params.id))
 
 const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
   clientSchema,
@@ -26,14 +26,14 @@ const [name, nameAttrs] = defineField('name')
 
 onMounted(async () => {
   await fetchAll()
-  const found = clients.value.find(c => c.id === clientId)
+  const found = clients.value.find(c => c.id === clientId.value)
   if (found) name.value = found.name
 })
 
 const onSubmit = handleServerSubmit(async (values) => {
-  await update(clientId, values.name)
+  await update(clientId.value, values.name)
   toast.success('Client updated')
-  router.push({ name: 'client-detail', params: { id: clientId } })
+  router.push({ name: 'client-detail', params: { id: clientId.value } })
 })
 </script>
 

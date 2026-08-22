@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProducts } from '@/composables/useProducts'
 import { useFormValidation } from '@/composables/useFormValidation'
@@ -16,7 +16,7 @@ const route = useRoute()
 const router = useRouter()
 const { products, loading, fetchAll, update } = useProducts()
 
-const productId = Number(route.params.id)
+const productId = computed(() => Number(route.params.id))
 
 const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
   productSchema,
@@ -30,7 +30,7 @@ const [kg, kgAttrs] = defineField('kg')
 
 onMounted(async () => {
   await fetchAll()
-  const found = products.value.find(p => p.id === productId)
+  const found = products.value.find(p => p.id === productId.value)
   if (found) {
     name.value = found.name
     code.value = found.code
@@ -40,9 +40,9 @@ onMounted(async () => {
 })
 
 const onSubmit = handleServerSubmit(async (values) => {
-  await update(productId, values.name, values.code, values.description, values.kg)
+  await update(productId.value, values.name, values.code, values.description, values.kg)
   toast.success('Product updated')
-  router.push({ name: 'product-detail', params: { id: productId } })
+  router.push({ name: 'product-detail', params: { id: productId.value } })
 })
 </script>
 

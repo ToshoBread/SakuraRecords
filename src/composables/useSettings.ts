@@ -32,7 +32,16 @@ function save(settings: Settings) {
 
 const settings = ref<Settings>(load())
 
+let watcherInitialized = false
+function ensureWatcher() {
+  if (watcherInitialized) return
+  watcherInitialized = true
+  watch(settings, (s) => save(s), { deep: true })
+}
+
 export function useSettings() {
+  ensureWatcher()
+
   function setTheme(theme: Theme) {
     settings.value = { ...settings.value, theme }
   }
@@ -44,8 +53,6 @@ export function useSettings() {
   function setLandingPage(landingPage: LandingPage) {
     settings.value = { ...settings.value, landingPage }
   }
-
-  watch(settings, (s) => save(s), { deep: true })
 
   return {
     settings,

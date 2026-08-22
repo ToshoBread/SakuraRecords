@@ -20,12 +20,12 @@ const {
   fetchByPurchaseOrderNumber, deleteDelivery,
 } = usePurchaseOrder()
 
-const poNumber = route.params.purchaseOrderNumber as string
+const poNumber = computed(() => route.params.purchaseOrderNumber as string)
 
 const showDeliveryForm = ref(false)
 const editingDelivery = ref<Delivery | null>(null)
 
-onMounted(() => fetchByPurchaseOrderNumber(poNumber))
+onMounted(() => fetchByPurchaseOrderNumber(poNumber.value))
 
 function openAddDelivery() {
   editingDelivery.value = null
@@ -43,7 +43,7 @@ function onDeliveryFormClose() {
 }
 
 function onDeliverySaved() {
-  fetchByPurchaseOrderNumber(poNumber)
+  fetchByPurchaseOrderNumber(poNumber.value)
 }
 
 const activeDeliveries = computed(() =>
@@ -55,7 +55,7 @@ async function handleDeleteDelivery(id: number) {
   try {
     await deleteDelivery(id)
     toast.success('Delivery deleted')
-  fetchByPurchaseOrderNumber(poNumber)
+  fetchByPurchaseOrderNumber(poNumber.value)
   } catch (e: any) {
     toast.error(e.message)
   }

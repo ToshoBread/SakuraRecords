@@ -18,7 +18,7 @@ import { Plus, Trash2 } from '@lucide/vue'
 
 const router = useRouter()
 const route = useRoute()
-const poNumber = route.params.purchaseOrderNumber as string
+const poNumber = computed(() => route.params.purchaseOrderNumber as string)
 
 const { purchaseOrder, loading, error, productsWithRemaining, fetchByPurchaseOrderNumber } = usePurchaseOrder()
 const { products: allProducts, fetchAll: fetchAllProducts } = useProducts()
@@ -40,7 +40,7 @@ const filteredProducts = computed(() => {
 })
 
 onMounted(async () => {
-  await Promise.all([fetchByPurchaseOrderNumber(poNumber), fetchAllProducts()])
+  await Promise.all([fetchByPurchaseOrderNumber(poNumber.value), fetchAllProducts()])
   if (purchaseOrder.value) {
     notes.value = purchaseOrder.value.notes || ''
     localProducts.value = productsWithRemaining.value.map(p => ({
@@ -106,14 +106,14 @@ async function handleSubmit() {
     const { error: notesError } = await supabase
       .from('purchase_order')
       .update({ notes: result.data.notes || null, updated_at: new Date().toISOString() })
-      .eq('id', poNumber)
+      .eq('id', poNumber.value)
 
     if (notesError) throw notesError
 
     const { data: currentPivots } = await supabase
       .from('po_product')
       .select('productid')
-      .eq('poid', poNumber)
+      .eq('poid', poNumber.value)
 
     const currentProductIds = currentPivots?.map(p => p.productid) ?? []
     const newProductIds = localProducts.value.map(p => p.productid)
@@ -123,7 +123,7 @@ async function handleSubmit() {
       const { error: addError } = await supabase
         .from('po_product')
         .insert(toAdd.map(p => ({
-          poid: poNumber,
+          poid: poNumber.value,
           productid: p.productid,
           ordered_quantity: p.ordered_quantity,
           price_per_kg: p.price_per_kg,
@@ -138,7 +138,7 @@ async function handleSubmit() {
       const { error: removeError } = await supabase
         .from('po_product')
         .delete()
-        .eq('poid', poNumber)
+        .eq('poid', poNumber.value)
         .eq('productid', productid)
       if (removeError) throw removeError
     }
@@ -148,7 +148,7 @@ async function handleSubmit() {
         const { error: qtyError } = await supabase
           .from('po_product')
           .update({ ordered_quantity: product.ordered_quantity, price_per_kg: product.price_per_kg })
-          .eq('poid', poNumber)
+          .eq('poid', poNumber.value)
           .eq('productid', product.productid)
         if (qtyError) throw qtyError
 
@@ -156,7 +156,7 @@ async function handleSubmit() {
           const { error: deliveryPriceError } = await supabase
             .from('delivery')
             .update({ unit_price: product.price_per_kg })
-            .eq('poid', poNumber)
+            .eq('poid', poNumber.value)
             .eq('productid', product.productid)
             .is('deleted_at', null)
           if (deliveryPriceError) throw deliveryPriceError
@@ -164,7 +164,7 @@ async function handleSubmit() {
       }
     }
 
-    router.push({ name: 'purchase-order-detail',     params: { purchaseOrderNumber: poNumber } })
+    router.push({ name: 'purchase-order-detail', params: { purchaseOrderNumber: poNumber.value } })
     toast.success('Purchase order updated')
   } catch (e: any) {
     toast.error(e.message)

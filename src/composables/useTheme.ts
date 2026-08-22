@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { useSettings, type Theme } from './useSettings'
 
 const isDark = ref(false)
+let osThemeListener: ((e: MediaQueryListEvent) => void) | null = null
 
 function initTheme() {
   const { settings } = useSettings()
@@ -15,6 +16,19 @@ function applyThemeValue(theme: Theme) {
   } else {
     isDark.value = false
     document.documentElement.classList.remove('dark')
+  }
+
+  if (osThemeListener) {
+    window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', osThemeListener)
+    osThemeListener = null
+  }
+
+  if (theme === 'system') {
+    osThemeListener = () => {
+      const { settings } = useSettings()
+      applyThemeValue(settings.value.theme)
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', osThemeListener)
   }
 }
 

@@ -59,36 +59,22 @@ export function usePurchaseOrders() {
     const now = new Date()
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
     const quarterStart = getQuarterStart(now).toISOString()
-    const today = now.toISOString()
 
-    // Count open purchase orders (POs with products or undelivered deliveries)
     const { data: allPurchaseOrders } = await supabase
       .from('purchase_order')
-      .select('id')
+      .select('id, po_products:po_product(count), deliveries:delivery(delivered)')
       .is('deleted_at', null)
 
     let openPurchaseOrders = 0
     if (allPurchaseOrders) {
       for (const po of allPurchaseOrders) {
-        const { count: productCount } = await supabase
-          .from('po_product')
-          .select('*', { count: 'exact', head: true })
-          .eq('poid', po.id)
-          .is('deleted_at', null)
-
-        if (productCount && productCount > 0) {
+        const productCount = po.po_products?.[0]?.count ?? 0
+        if (productCount > 0) {
           openPurchaseOrders++
           continue
         }
-
-        const { count: undeliveredCount } = await supabase
-          .from('delivery')
-          .select('*', { count: 'exact', head: true })
-          .eq('poid', po.id)
-          .eq('delivered', false)
-          .is('deleted_at', null)
-
-        if (undeliveredCount && undeliveredCount > 0) openPurchaseOrders++
+        const hasUndelivered = po.deliveries?.some((d: { delivered: boolean }) => !d.delivered) ?? false
+        if (hasUndelivered) openPurchaseOrders++
       }
     }
 
@@ -109,12 +95,17 @@ export function usePurchaseOrders() {
       (sum, d) => sum + Number(d.shipped_quantity) * Number(d.unit_price), 0
     ) ?? 0
 
-    const { count: overdueDeliveries } = await supabase
+    const { data: undeliveredDeliveries } = await supabase
       .from('delivery')
-      .select('*', { count: 'exact', head: true })
+      .select('delivery_date, payment_terms')
       .is('deleted_at', null)
       .eq('delivered', false)
-      .filter('delivery_date + (payment_terms || \' days\')::interval', 'lt', today)
+
+    const overdueDeliveries = undeliveredDeliveries?.filter((d) => {
+      const dueDate = new Date(d.delivery_date)
+      dueDate.setDate(dueDate.getDate() + d.payment_terms)
+      return dueDate < now
+    }).length ?? 0
 
     const { count: deliveriesThisQuarter } = await supabase
       .from('delivery')
@@ -137,7 +128,7 @@ export function usePurchaseOrders() {
       openPurchaseOrders: openPurchaseOrders ?? 0,
       deliveriesThisMonth: deliveriesThisMonth ?? 0,
       grossSalesThisMonth,
-      overdueDeliveries: overdueDeliveries ?? 0,
+      overdueDeliveries,
       deliveriesThisQuarter: deliveriesThisQuarter ?? 0,
       grossSalesThisQuarter,
     }

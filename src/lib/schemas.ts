@@ -32,7 +32,7 @@ export const purchaseOrderSchema = z.object({
 export const purchaseOrderEditSchema = z.object({
   notes: z.string().max(1000).optional().or(z.literal('')),
   products: z.array(z.object({
-    productid: z.number(),
+    productId: z.number(),
     name: z.string(),
     code: z.string(),
     ordered_quantity: z.number().min(1, 'Quantity must be at least 1'),
