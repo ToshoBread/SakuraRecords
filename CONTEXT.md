@@ -21,7 +21,7 @@ Links a PO to the products it contains, with the ordered quantity per product an
 _Avoid_: order_item, line_item
 
 **Delivery**:
-A shipment of a specific product from a PO, on a specific date. Records the shipped quantity and unit price (per kg, auto-derived from PO's `price_per_kg`). The `delivered` flag indicates whether the shipment has been received — only deliveries with `delivered = true` count toward the shipped total. A delivery cannot exist without a PO; a PO must contain deliveries. The ordered quantity lives on the PO-Product pivot, not on the delivery. The total shipped quantity across all delivered deliveries for a given product in a PO must not exceed the ordered quantity on the PO-Product pivot.
+A shipment of a specific product on a specific date. The `poid` is optional — a delivery may be **standalone** (no PO) or **linked** to a PO. `unit_price` is manual entry for standalone deliveries; auto-derived from `po_product.price_per_kg` when created from a PO. The `delivered` flag indicates whether the shipment has been received — only deliveries with `delivered = true` count toward the shipped total. A standalone delivery can be linked to a PO later via `link_delivery_to_po()`. The ordered quantity lives on the PO-Product pivot. The total shipped quantity across all delivered deliveries for a given product in a PO must not exceed the ordered quantity on the PO-Product pivot (enforced by trigger; skipped for standalone).
 _Avoid_: Shipment, consignment
 
 **Address**:

@@ -82,7 +82,7 @@ define(['./workbox-b198645c'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "/offline.html",
-    "revision": "0.da05sq0ap3"
+    "revision": "0.a91o15cigd8"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/offline.html"), {
@@ -105,7 +105,6 @@ define(['./workbox-b198645c'], (function (workbox) { 'use strict';
   }), 'GET');
   workbox.registerRoute(/^\/$/, new workbox.NetworkFirst({
     "cacheName": "navigation",
-    "networkTimeoutSeconds": 3,
     plugins: []
   }), 'GET');
 

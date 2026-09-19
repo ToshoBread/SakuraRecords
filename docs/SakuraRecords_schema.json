@@ -517,9 +517,9 @@
           "check": "",
           "primary": false,
           "unique": false,
-          "notNull": true,
+          "notNull": false,
           "increment": false,
-          "comment": "",
+          "comment": "nullable — standalone deliveries have no PO",
           "id": "hKRL5Zep6uidGUBhap1xX",
           "size": 255
         },

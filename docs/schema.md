@@ -59,7 +59,7 @@
 | Column | Type | Constraints |
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
-| poid | VARCHAR(255) | FK→purchase_order, NOT NULL |
+| poid | VARCHAR(255) | FK→purchase_order, nullable |
 | productid | INTEGER | FK→product, NOT NULL |
 | shipped_quantity | NUMERIC | NOT NULL, CHECK >= 0 |
 | unit_price | NUMERIC | NOT NULL, CHECK >= 0 |
@@ -73,7 +73,7 @@
 | updated_at | TIMESTAMPTZ | NOT NULL |
 | deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
-**Business rule:** The total `shipped_quantity` across all **delivered** deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Only deliveries with `delivered = true` count toward the shipped total. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
+**Business rule:** The total `shipped_quantity` across all **delivered** deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Only deliveries with `delivered = true` count toward the shipped total. Standalone deliveries (no PO) are exempt — the trigger skips the check when `poid IS NULL`. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
 
 ### transaction_document
 | Column | Type | Constraints |
