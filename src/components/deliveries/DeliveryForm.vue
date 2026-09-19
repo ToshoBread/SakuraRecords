@@ -151,11 +151,6 @@ const isProductDisabled = computed(() => {
   return false
 })
 
-const isAddressDisabled = computed(() => {
-  if (isSubmitting.value) return true
-  return false
-})
-
 const canLink = computed(() => {
   if (!isEditing.value) return false
   if (!props.delivery) return false
@@ -193,8 +188,11 @@ watch(
         .is('deleted_at', null)
         .order('name')
       addresses.value = (data as AddressOption[]) ?? []
-      if (props.delivery && addresses.value.some(a => a.id === props.delivery.addressid)) {
-        addressId.value = String(props.delivery.addressid)
+      if (props.delivery) {
+        const delivery = props.delivery
+        if (addresses.value.some(a => a.id === delivery.addressid)) {
+          addressId.value = String(delivery.addressid)
+        }
       }
     } else {
       addresses.value = []
@@ -218,57 +216,46 @@ watch(selectedPO, async (newPO) => {
 })
 
 onMounted(async () => {
-  const fetches: Promise<unknown>[] = [
-    supabase
-      .from('transaction_document')
-      .select('id, document')
-      .is('deleted_at', null)
-      .order('document'),
-    supabase
-      .from('delivery_requirement')
-      .select('id, requirement')
-      .is('deleted_at', null)
-      .order('requirement'),
-  ]
-
-  if (!props.clientId) {
-    fetches.push(
-      supabase.from('client').select('id, name').is('deleted_at', null).order('name'),
-      supabase.from('product').select('id, name, code').is('deleted_at', null).order('name'),
-      supabase
-        .from('purchase_order')
-        .select('id, client:clientid (name)')
-        .is('deleted_at', null)
-        .order('id'),
-    )
-  }
-
-  if (props.delivery && !props.clientId) {
-    fetches.push(
-      supabase
-        .from('address')
-        .select('clientid')
-        .eq('id', props.delivery.addressid)
-        .single(),
-    )
-  }
-
-  const [tdRes, drRes, ...rest] = await Promise.all(fetches)
-
+  const tdRes = await supabase
+    .from('transaction_document')
+    .select('id, document')
+    .is('deleted_at', null)
+    .order('document')
   transactionDocuments.value = (tdRes.data as { id: number; document: string }[]) ?? []
+
+  const drRes = await supabase
+    .from('delivery_requirement')
+    .select('id, requirement')
+    .is('deleted_at', null)
+    .order('requirement')
   deliveryRequirements.value = (drRes.data as { id: number; requirement: string }[]) ?? []
 
   if (!props.clientId) {
-    allClients.value = (rest[0].data as ClientOption[]) ?? []
-    allProducts.value = (rest[1].data as ProductOption[]) ?? []
-    purchaseOrders.value = (rest[2].data as PurchaseOrderOption[]) ?? []
+    const clientRes = await supabase.from('client').select('id, name').is('deleted_at', null).order('name')
+    allClients.value = (clientRes.data as ClientOption[]) ?? []
+
+    const productRes = await supabase.from('product').select('id, name, code').is('deleted_at', null).order('name')
+    allProducts.value = (productRes.data as ProductOption[]) ?? []
+
+    const poRes = await supabase
+      .from('purchase_order')
+      .select('id, client:clientid (name)')
+      .is('deleted_at', null)
+      .order('id')
+    purchaseOrders.value = (poRes.data as PurchaseOrderOption[]) ?? []
 
     if (props.delivery) {
-      const addrClient = rest[3].data as { clientid: number } | null
+      const delivery = props.delivery
+      const addrRes = await supabase
+        .from('address')
+        .select('clientid')
+        .eq('id', delivery.addressid)
+        .single()
+      const addrClient = addrRes.data as { clientid: number } | null
       if (addrClient) {
         selectedClient.value = String(addrClient.clientid)
-        if (props.delivery.poid) {
-          selectedPO.value = props.delivery.poid
+        if (delivery.poid) {
+          selectedPO.value = delivery.poid
         }
       }
     }
