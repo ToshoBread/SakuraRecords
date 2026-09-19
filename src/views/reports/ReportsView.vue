@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useReports, type DateRange } from '@/composables/useReports'
-import DateRangePicker from './DateRangePicker.vue'
-import QuantityReport from './QuantityReport.vue'
-import ClientSalesReport from './ClientSalesReport.vue'
-import ProductSalesReport from './ProductSalesReport.vue'
+import DateRangePicker from '@/components/reports/DateRangePicker.vue'
+import QuantityReport from '@/components/reports/QuantityReport.vue'
+import ClientSalesReport from '@/components/reports/ClientSalesReport.vue'
+import ProductSalesReport from '@/components/reports/ProductSalesReport.vue'
 
 function getCurrentQuarter(): DateRange {
   const now = new Date()

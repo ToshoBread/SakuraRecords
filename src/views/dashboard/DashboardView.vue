@@ -2,8 +2,8 @@
 import { onMounted } from 'vue'
 import { usePurchaseOrders } from '@/composables/usePurchaseOrders'
 import { formatCurrency } from '@/lib/format'
-import StatCard from './StatCard.vue'
-import RecentPOList from './RecentPOList.vue'
+import StatCard from '@/components/dashboard/StatCard.vue'
+import RecentPOList from '@/components/dashboard/RecentPOList.vue'
 
 const { purchaseOrderList, stats, loading, fetchRecent, fetchStats } = usePurchaseOrders()
 

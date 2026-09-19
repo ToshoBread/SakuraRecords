@@ -10,8 +10,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import POProductTable from '@/components/po/POProductTable.vue'
-import DeliveryTable from '@/components/po/DeliveryTable.vue'
-import DeliveryForm from '@/components/po/DeliveryForm.vue'
+import DeliveryTable from '@/components/deliveries/DeliveryTable.vue'
+import DeliveryForm from '@/components/deliveries/DeliveryForm.vue'
 import { Plus, Pencil } from '@lucide/vue'
 
 const route = useRoute()
