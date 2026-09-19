@@ -11,6 +11,7 @@ import {
   BarChart3,
   Plus,
   Shield,
+  Truck,
   X,
 } from '@lucide/vue'
 
@@ -23,6 +24,7 @@ const { isAdmin } = useAuth()
 const navItems = [
   { name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { name: 'purchase-order-list', label: 'Purchase Orders', icon: FileText },
+  { name: 'delivery-list', label: 'Deliveries', icon: Truck },
   { name: 'client-list', label: 'Clients', icon: Users },
   { name: 'product-list', label: 'Products', icon: Package },
   { name: 'reports', label: 'Reports', icon: BarChart3 },

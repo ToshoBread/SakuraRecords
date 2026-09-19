@@ -22,7 +22,7 @@ export interface PurchaseOrderProduct {
 
 export interface Delivery {
   id: number
-  poid: string
+  poid: string | null
   productid: number
   shipped_quantity: number
   unit_price: number
@@ -97,7 +97,7 @@ export function usePurchaseOrder() {
   }
 
   async function addDelivery(delivery: {
-    poid: string
+    poid: string | null
     productid: number
     shipped_quantity: number
     unit_price: number
@@ -146,6 +146,24 @@ export function usePurchaseOrder() {
     if (err) throw err
   }
 
+  async function linkDeliveryToPO(deliveryId: number, poId: string) {
+    const { error: err } = await supabase.rpc('link_delivery_to_po', {
+      p_delivery_id: deliveryId,
+      p_poid: poId,
+    })
+
+    if (err) throw err
+  }
+
+  async function unlinkDelivery(deliveryId: number) {
+    const { error: err } = await supabase
+      .from('delivery')
+      .update({ poid: null, updated_at: new Date().toISOString() })
+      .eq('id', deliveryId)
+
+    if (err) throw err
+  }
+
   return {
     purchaseOrder,
     loading,
@@ -155,5 +173,7 @@ export function usePurchaseOrder() {
     addDelivery,
     updateDelivery,
     deleteDelivery,
+    linkDeliveryToPO,
+    unlinkDelivery,
   }
 }
