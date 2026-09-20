@@ -1,32 +1,51 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClients } from '@/composables/useClients'
 import { formatDate } from '@/lib/format'
+import { useDebounceFn } from '@vueuse/core'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus } from '@lucide/vue'
+import { Plus, Search } from '@lucide/vue'
+import Pagination from '@/components/shared/Pagination.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { clients, loading, fetchAll } = useClients()
+const { clients, loading, fetchPage, currentPage, pageSize, totalItems, totalPages } = useClients()
 
 const searchQuery = ref((route.query.q as string) || '')
 
-const filteredClients = computed(() => {
-  const q = searchQuery.value.toLowerCase().trim()
-  if (!q) return clients.value
-  return clients.value.filter(c => c.name.toLowerCase().includes(q))
+const loadPage = (page: number = 1, search: string = searchQuery.value) => {
+  fetchPage(page, search)
+}
+
+onMounted(() => loadPage(1))
+
+watch(currentPage, (newPage) => {
+  loadPage(newPage, searchQuery.value)
+})
+
+watch(pageSize, () => {
+  currentPage.value = 1
+  loadPage(1)
+})
+
+const debouncedSearch = useDebounceFn((query: string) => {
+  currentPage.value = 1
+  loadPage(1, query)
+}, 300)
+
+watch(searchQuery, (q) => {
+  debouncedSearch(q)
 })
 
 function goToDetail(id: number) {
   router.push({ name: 'client-detail', params: { id } })
 }
-
-onMounted(() => fetchAll())
 </script>
 
 <template>
@@ -41,20 +60,25 @@ onMounted(() => fetchAll())
       </Button>
     </div>
 
+    <div class="relative max-w-sm">
+      <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+      <Input v-model="searchQuery" placeholder="Search clients..." class="pl-10" />
+    </div>
+
     <Card>
       <CardContent class="p-0">
         <div v-if="loading" class="flex flex-col gap-2 p-4">
           <Skeleton v-for="i in 5" :key="i" class="h-12 w-full" />
         </div>
 
-        <Empty v-else-if="filteredClients.length === 0 && searchQuery">
+        <Empty v-else-if="clients.length === 0 && searchQuery">
           <EmptyHeader>
             <EmptyTitle>No matching clients</EmptyTitle>
             <EmptyDescription>No clients match "{{ searchQuery }}".</EmptyDescription>
           </EmptyHeader>
         </Empty>
 
-        <Empty v-else-if="filteredClients.length === 0">
+        <Empty v-else-if="clients.length === 0">
           <EmptyHeader>
             <EmptyTitle>No clients yet</EmptyTitle>
             <EmptyDescription>Add your first client to get started.</EmptyDescription>
@@ -75,7 +99,7 @@ onMounted(() => fetchAll())
           </TableHeader>
           <TableBody>
             <TableRow
-              v-for="client in filteredClients"
+              v-for="client in clients"
               :key="client.id"
               class="cursor-pointer"
               role="link"
@@ -91,6 +115,14 @@ onMounted(() => fetchAll())
           </TableBody>
         </Table>
       </CardContent>
+      <CardFooter v-if="!loading">
+        <Pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total-items="totalItems"
+          :total-pages="totalPages"
+        />
+      </CardFooter>
     </Card>
   </div>
 </template>

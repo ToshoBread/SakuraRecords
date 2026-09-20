@@ -6,6 +6,7 @@ import { useFormValidation } from '@/composables/useFormValidation'
 import { deliverySchema } from '@/lib/schemas'
 import { toast } from 'vue-sonner'
 import type { ProductWithRemaining, Delivery } from '@/composables/usePurchaseOrder'
+import type { DeliveryWithRelations } from '@/composables/useDeliveries'
 import { Button } from '@/components/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -49,7 +50,7 @@ const props = defineProps<{
   poId?: string | null
   clientId?: number | null
   products?: ProductWithRemaining[]
-  delivery?: Delivery | null
+  delivery?: Delivery | DeliveryWithRelations | null
 }>()
 
 const emit = defineEmits<{
@@ -63,7 +64,6 @@ const hasPO = computed(() => Boolean(props.poId || selectedPO.value || props.del
 const isUnitPriceEditable = computed(() => !hasPO.value)
 
 const selectedPO = ref<string | null>(null)
-const selectedClient = ref<string | null>(null)
 const allClients = ref<ClientOption[]>([])
 const allProducts = ref<ProductOption[]>([])
 const poProducts = ref<ProductOption[]>([])
@@ -75,6 +75,9 @@ const deliveryRequirements = ref<{ id: number; requirement: string }[]>([])
 const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = useFormValidation(
   deliverySchema,
   {
+    clientId: props.delivery
+      ? String(props.delivery.clientid ?? '')
+      : (props.clientId ? String(props.clientId) : ''),
     productId: props.delivery ? String(props.delivery.productid) : '',
     unit_price: props.delivery?.unit_price ?? 0,
     shipped_quantity: props.delivery?.shipped_quantity ?? 1,
@@ -87,6 +90,7 @@ const { errors, isSubmitting, serverError, defineField, handleServerSubmit } = u
   },
 )
 
+const [clientId] = defineField('clientId')
 const [productId] = defineField('productId')
 const [shipped_quantity, shipped_quantityAttrs] = defineField('shipped_quantity')
 const [unit_price, unit_priceAttrs] = defineField('unit_price')
@@ -97,7 +101,10 @@ const [addressId] = defineField('addressId')
 const [transactionDocumentId] = defineField('transactionDocumentId')
 const [deliveryRequirementId] = defineField('deliveryRequirementId')
 
-const currentClientId = computed(() => props.clientId ?? Number(selectedClient.value) ?? null)
+const currentClientId = computed(() => {
+  if (props.clientId) return props.clientId
+  return clientId.value ? Number(clientId.value) : null
+})
 
 const effectiveProducts = computed<ProductOption[]>(() => {
   if (props.poId && props.products) {
@@ -234,7 +241,7 @@ onMounted(async () => {
     const clientRes = await supabase.from('client').select('id, name').is('deleted_at', null).order('name')
     allClients.value = (clientRes.data as ClientOption[]) ?? []
 
-    const productRes = await supabase.from('product').select('id, name, code').is('deleted_at', null).order('name')
+    const productRes = await supabase.from('product').select('productid: id, name, code').is('deleted_at', null).order('name')
     allProducts.value = (productRes.data as ProductOption[]) ?? []
 
     const poRes = await supabase
@@ -246,17 +253,21 @@ onMounted(async () => {
 
     if (props.delivery) {
       const delivery = props.delivery
-      const addrRes = await supabase
-        .from('address')
-        .select('clientid')
-        .eq('id', delivery.addressid)
-        .single()
-      const addrClient = addrRes.data as { clientid: number } | null
-      if (addrClient) {
-        selectedClient.value = String(addrClient.clientid)
-        if (delivery.poid) {
-          selectedPO.value = delivery.poid
+      if (delivery.clientid) {
+        clientId.value = String(delivery.clientid)
+      } else {
+        const addrRes = await supabase
+          .from('address')
+          .select('clientid')
+          .eq('id', delivery.addressid)
+          .single()
+        const addrClient = addrRes.data as { clientid: number } | null
+        if (addrClient?.clientid) {
+          clientId.value = String(addrClient.clientid)
         }
+      }
+      if (delivery.poid) {
+        selectedPO.value = delivery.poid
       }
     }
   } else if (props.clientId) {
@@ -283,6 +294,7 @@ const onSubmit = handleServerSubmit(async (values) => {
 
   const payload = {
     productid: Number(values.productId),
+    clientid: currentClientId.value,
     shipped_quantity: Number(values.shipped_quantity),
     unit_price: price,
     delivery_date: values.delivery_date,
@@ -427,9 +439,9 @@ async function handleUnlink() {
         </div>
 
         <FieldGroup>
-          <Field v-if="!props.clientId && isStandalone">
+          <Field v-if="!props.clientId && isStandalone" :data-invalid="!!errors.clientId">
             <FieldLabel for="clientSelect">Client</FieldLabel>
-            <Select v-model="selectedClient" :disabled="isSubmitting">
+            <Select v-model="clientId" :disabled="isSubmitting">
               <SelectTrigger id="clientSelect" class="w-full">
                 <SelectValue placeholder="Select client" />
               </SelectTrigger>
@@ -443,6 +455,7 @@ async function handleUnlink() {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p v-if="errors.clientId" class="text-sm text-destructive">{{ errors.clientId }}</p>
           </Field>
 
           <Field v-if="!props.poId && isStandalone && !isEditing">
@@ -488,8 +501,8 @@ async function handleUnlink() {
           <Field v-else :data-invalid="!!errors.productId">
             <FieldLabel>Product</FieldLabel>
             <div v-if="isProductDisabled" class="flex items-center gap-2 py-2">
-              <span class="font-medium">{{ props.delivery?.product?.name }}</span>
-              <span class="text-muted-foreground">({{ props.delivery?.product?.code }})</span>
+              <span class="font-medium">{{ props.delivery?.product?.name ?? props.delivery?.product_name ?? '—' }}</span>
+              <span class="text-muted-foreground">({{ props.delivery?.product?.code ?? props.delivery?.product_code ?? '' }})</span>
             </div>
             <Select v-else v-model="productId" :disabled="isSubmitting">
               <SelectTrigger class="w-full">

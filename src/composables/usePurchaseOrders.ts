@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 export interface PurchaseOrder {
@@ -33,6 +33,11 @@ export function usePurchaseOrders() {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
+  const currentPage = ref(1)
+  const pageSize = ref(20)
+  const totalItems = ref(0)
+  const totalPages = computed(() => Math.ceil(totalItems.value / pageSize.value) || 1)
+
   async function fetchRecent(limit = 10) {
     loading.value = true
     const { data, error: fetchErr } = await supabase
@@ -53,6 +58,45 @@ export function usePurchaseOrders() {
       purchaseOrderList.value = data as unknown as PurchaseOrder[]
     }
     loading.value = false
+  }
+
+  async function fetchPage(page: number = 1, search: string = '') {
+    loading.value = true
+    error.value = null
+    const start = (page - 1) * pageSize.value
+    const end = start + pageSize.value - 1
+
+    try {
+      let query = supabase
+        .from('purchase_order')
+        .select(`
+          id, clientid, notes, created_at,
+          client:clientid (name),
+          deliveries:delivery (count),
+          po_products:po_product (count)
+        `, { count: 'exact' })
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .range(start, end)
+
+      if (search) {
+        query = query.ilike('id', `%${search}%`)
+      }
+
+      const { data, count, error: err } = await query
+
+      if (err) {
+        error.value = err.message
+      } else {
+        purchaseOrderList.value = data as unknown as PurchaseOrder[]
+        totalItems.value = count ?? 0
+        currentPage.value = page
+      }
+    } catch (e: any) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
   }
 
   async function fetchStats() {
@@ -181,7 +225,12 @@ export function usePurchaseOrders() {
     stats,
     loading,
     error,
+    currentPage,
+    pageSize,
+    totalItems,
+    totalPages,
     fetchRecent,
+    fetchPage,
     fetchStats,
     createPurchaseOrder,
     checkPurchaseOrderNumberUnique,
