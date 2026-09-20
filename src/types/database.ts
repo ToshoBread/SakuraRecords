@@ -79,6 +79,7 @@ export type Database = {
       delivery: {
         Row: {
           addressid: number
+          clientid: number | null
           created_at: string
           deleted_at: string | null
           delivered: boolean
@@ -95,6 +96,7 @@ export type Database = {
         }
         Insert: {
           addressid: number
+          clientid?: number | null
           created_at?: string
           deleted_at?: string | null
           delivered?: boolean
@@ -111,6 +113,7 @@ export type Database = {
         }
         Update: {
           addressid?: number
+          clientid?: number | null
           created_at?: string
           deleted_at?: string | null
           delivered?: boolean
@@ -131,6 +134,13 @@ export type Database = {
             columns: ["addressid"]
             isOneToOne: false
             referencedRelation: "address"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_clientid_fkey"
+            columns: ["clientid"]
+            isOneToOne: false
+            referencedRelation: "client"
             referencedColumns: ["id"]
           },
           {
@@ -326,7 +336,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      delivery_search: {
+        Row: {
+          id: number
+          poid: string | null
+          clientid: number | null
+          productid: number
+          shipped_quantity: number
+          unit_price: number
+          delivery_date: string
+          payment_terms: number
+          delivered: boolean
+          addressid: number
+          transactiondocumentid: number
+          deliveryrequirementid: number
+          created_at: string
+          updated_at: string
+          deleted_at: string | null
+          address_clientid: number
+          product_name: string | null
+          product_code: string | null
+          direct_client_name: string | null
+          po_number: string | null
+          address_name: string | null
+          client_name: string | null
+          po_client_name: string | null
+          transaction_document_name: string | null
+          delivery_requirement_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_role: { Args: never; Returns: string }
