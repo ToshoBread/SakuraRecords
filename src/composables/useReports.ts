@@ -109,7 +109,7 @@ export function useReports() {
         shipped_quantity,
         unit_price,
         delivery_date,
-        purchase_order:poid (clientid, client:clientid (name))
+        client:clientid (name)
       `)
       .is('deleted_at', null)
       .eq('delivered', true)
@@ -121,10 +121,10 @@ export function useReports() {
     const grouped = new Map<string, { name: string; months: Record<string, number> }>()
 
     for (const row of data ?? []) {
-      const po = row.purchase_order as { client: { name: string } } | null
-      if (!po?.client) continue
+      const client = row.client as { name: string } | null
+      if (!client) continue
 
-      const clientName = po.client.name
+      const clientName = client.name
       if (!grouped.has(clientName)) {
         grouped.set(clientName, { name: clientName, months: {} })
       }

@@ -23,6 +23,7 @@ export interface PurchaseOrderProduct {
 export interface Delivery {
   id: number
   poid: string | null
+  clientid: number | null
   productid: number
   shipped_quantity: number
   unit_price: number
@@ -81,6 +82,7 @@ export function usePurchaseOrder() {
         ),
         deliveries:delivery (
           *,
+          client:clientid (name),
           product:productid (name, code),
           address:addressid (name),
           transaction_document:transactiondocumentid (document),
@@ -98,6 +100,7 @@ export function usePurchaseOrder() {
 
   async function addDelivery(delivery: {
     poid: string | null
+    clientid: number | null
     productid: number
     shipped_quantity: number
     unit_price: number
@@ -116,6 +119,7 @@ export function usePurchaseOrder() {
   }
 
   async function updateDelivery(id: number, delivery: {
+    clientid?: number | null
     productid: number
     shipped_quantity: number
     unit_price: number

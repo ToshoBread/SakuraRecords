@@ -60,6 +60,7 @@
 |--------|------|-------------|
 | id | INTEGER | PK, auto-increment |
 | poid | VARCHAR(255) | FK→purchase_order, nullable |
+| clientid | INTEGER | FK→client, nullable (direct client linkage for standalone deliveries) |
 | productid | INTEGER | FK→product, NOT NULL |
 | shipped_quantity | NUMERIC | NOT NULL, CHECK >= 0 |
 | unit_price | NUMERIC | NOT NULL, CHECK >= 0 |
@@ -74,6 +75,8 @@
 | deleted_at | TIMESTAMPTZ | NULL (soft delete) |
 
 **Business rule:** The total `shipped_quantity` across all **delivered** deliveries for a given product in a PO must not exceed the `ordered_quantity` on the corresponding `po_product` row. Only deliveries with `delivered = true` count toward the shipped total. Standalone deliveries (no PO) are exempt — the trigger skips the check when `poid IS NULL`. Enforced by PostgreSQL trigger and client-side validation (see ADR-0005).
+
+**Client linkage:** `delivery.clientid` provides a direct link to the client, decoupling client identity from `purchase_order`. This is essential for **standalone deliveries** (no PO) so that client-based reports (e.g., gross sales by client) work without a PO join. When a delivery is linked to a PO, `clientid` should match `po.clientid`.
 
 ### transaction_document
 | Column | Type | Constraints |
@@ -102,6 +105,7 @@ Lookup values: "COA & PO", "COA", "PO", etc. ("Both" options listed first.)
 ```
 client (1) ──→ (N) address
 client (1) ──→ (N) purchase_order
+client (1) ──→ (N) delivery
 purchase_order (1) ──→ (N) po_product
 product (1) ──→ (N) po_product
 purchase_order (1) ──→ (N) delivery
@@ -114,5 +118,5 @@ delivery_requirement (1) ──→ (N) delivery
 ## Reporting Queries
 
 - **Total quantity per product per month:** `SUM(delivery.shipped_quantity)` WHERE `delivered = true` GROUP BY product, month(delivery_date)
-- **Client with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` WHERE `delivered = true` JOIN purchase_order GROUP BY client, month
+- **Client with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` WHERE `delivered = true` JOIN delivery.clientid GROUP BY client, month
 - **Product with highest gross sales per month:** `SUM(shipped_quantity × unit_price)` WHERE `delivered = true` JOIN product GROUP BY product, month

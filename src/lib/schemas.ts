@@ -47,7 +47,7 @@ export const loginSchema = z.object({
 
 export const deliverySchema = z.object({
   poid: z.string().nullable().optional(),
-  clientId: z.string().optional(),
+  clientId: z.string().min(1, 'Client is required'),
   productId: z.string().min(1, 'Product is required'),
   shipped_quantity: z.number().min(1, 'Quantity must be at least 1'),
   unit_price: z.number().min(0, 'Price must be non-negative'),
