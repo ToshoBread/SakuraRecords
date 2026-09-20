@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from '@lucide/vue'
+import type { AcceptableValue } from 'reka-ui'
 
 interface Props {
   currentPage: number
@@ -61,8 +62,9 @@ function prevPage() {
   }
 }
 
-function updatePageSize(value: string) {
-  const size = parseInt(value, 10)
+function updatePageSize(value: AcceptableValue) {
+  if (value === null || value === undefined) return
+  const size = parseInt(String(value), 10)
   emit('update:pageSize', size)
   emit('update:currentPage', 1)
 }

@@ -63,6 +63,21 @@ const isStandalone = computed(() => !props.poId)
 const hasPO = computed(() => Boolean(props.poId || selectedPO.value || props.delivery?.poid))
 const isUnitPriceEditable = computed(() => !hasPO.value)
 
+const displayProductName = computed(() => {
+  const d = props.delivery
+  if (!d) return '—'
+  if ('product' in d && d.product) return d.product.name
+  if ('product_name' in d) return d.product_name ?? '—'
+  return '—'
+})
+const displayProductCode = computed(() => {
+  const d = props.delivery
+  if (!d) return ''
+  if ('product' in d && d.product) return d.product.code
+  if ('product_code' in d) return d.product_code ?? ''
+  return ''
+})
+
 const selectedPO = ref<string | null>(null)
 const allClients = ref<ClientOption[]>([])
 const allProducts = ref<ProductOption[]>([])
@@ -501,8 +516,8 @@ async function handleUnlink() {
           <Field v-else :data-invalid="!!errors.productId">
             <FieldLabel>Product</FieldLabel>
             <div v-if="isProductDisabled" class="flex items-center gap-2 py-2">
-              <span class="font-medium">{{ props.delivery?.product?.name ?? props.delivery?.product_name ?? '—' }}</span>
-              <span class="text-muted-foreground">({{ props.delivery?.product?.code ?? props.delivery?.product_code ?? '' }})</span>
+              <span class="font-medium">{{ displayProductName }}</span>
+              <span class="text-muted-foreground">({{ displayProductCode }})</span>
             </div>
             <Select v-else v-model="productId" :disabled="isSubmitting">
               <SelectTrigger class="w-full">

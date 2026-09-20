@@ -32,24 +32,6 @@ export interface DeliveryWithRelations {
   delivery_requirement?: { requirement: string } | null
 }
 
-const deliverySelect = `
-  id,
-  poid,
-  clientid,
-  productid,
-  shipped_quantity,
-  unit_price,
-  delivery_date,
-  payment_terms,
-  delivered,
-  addressid,
-  transactiondocumentid,
-  deliveryrequirementid,
-  created_at,
-  updated_at,
-  deleted_at
-`
-
 export function useDeliveries() {
   const deliveries = ref<DeliveryWithRelations[]>([])
   const loading = ref(false)
